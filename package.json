@@ -7,23 +7,57 @@
     "build": "remix build",
     "dev": "remix dev",
     "postinstall": "remix setup node",
-    "start": "remix-serve build"
+    "start": "remix-serve build",
+    "watch:css": "postcss styles --base styles --dir app/styles -w",
+    "build:css": "postcss styles --base styles --dir app/styles --env production",
+    "prepare": "husky install",
+    "lint": "eslint 'app/**/*.{js,jsx,ts,tsx}' || exit 0",
+    "lint:fix": "eslint 'app/**/*.{js,jsx,ts,tsx}' --fix",
+    "fmt": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' && eslint 'app/**/*.{js,jsx,ts,tsx}'",
+    "lint-staged": "lint-staged"
   },
   "dependencies": {
+    "@emotion/react": "^11.6.0",
+    "@emotion/styled": "^11.6.0",
     "@remix-run/react": "^1.0.4",
+    "@remix-run/serve": "^1.0.4",
+    "@remix-run/vercel": "^1.0.4",
+    "@vercel/node": "^1.12.1",
+    "framer-motion": "^4.1.17",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "remix": "^1.0.4",
-    "@remix-run/serve": "^1.0.4"
+    "remix": "^1.0.4"
   },
   "devDependencies": {
     "@remix-run/dev": "^1.0.4",
     "@types/react": "^17.0.24",
     "@types/react-dom": "^17.0.9",
-    "typescript": "^4.1.2"
+    "@typescript-eslint/eslint-plugin": "^5.4.0",
+    "@typescript-eslint/parser": "^5.4.0",
+    "autoprefixer": "^10.4.0",
+    "eslint": "^8.3.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-react": "^7.27.1",
+    "gray-matter": "^4.0.3",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.1.2",
+    "postcss": "^8.3.11",
+    "postcss-cli": "^9.0.2",
+    "prettier": "^2.4.1",
+    "remark": "^14.0.2",
+    "remark-gfm": "^3.0.1",
+    "remark-html": "^15.0.0",
+    "tailwindcss": "^2.2.19",
+    "typescript": "^4.1.2",
+    "vercel": "^23.1.2"
   },
   "engines": {
     "node": ">=14"
   },
-  "sideEffects": false
+  "sideEffects": false,
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "npm run fmt"
+    ]
+  }
 }
