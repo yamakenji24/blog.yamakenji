@@ -27,7 +27,7 @@ jobs:
       - name: Deploy Preview
         uses: amondnet/vercel-action@v20
         id: vercel-deploy-preview
-        if: github.event_name == 'push' && github.ref != 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref != 'refs/heads/master'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
@@ -38,7 +38,7 @@ jobs:
       - name: Deploy Production
         uses: amondnet/vercel-action@v20
         id: vercel-deploy-production
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
