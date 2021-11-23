@@ -22,8 +22,8 @@ jobs:
       - name: Build Remix App
         run: |
           npm ci
-          npm run build
           npm run build:css
+          npm run build
 
       - name: Deploy Preview
         uses: amondnet/vercel-action@v20
