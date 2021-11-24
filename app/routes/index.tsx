@@ -2,6 +2,7 @@ import * as React from 'react';
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { useLoaderData, json } from 'remix';
 import { usePageDescription } from '../hooks/usePageDesciption';
+import { usePageTitle } from '~/hooks/usePageTitle';
 import { getAllPosts, PostData } from '~/lib/posts';
 import { BreadCrumb } from '~/components/common';
 
@@ -13,8 +14,9 @@ export const loader: LoaderFunction = async () => {
 // https://remix.run/api/conventions#meta
 export const meta: MetaFunction = () => {
   const description = usePageDescription();
+  const title = usePageTitle();
   return {
-    title: 'TopPage of yamakenji Blog Site',
+    title: title,
     description: description,
     'og:description': description,
   };

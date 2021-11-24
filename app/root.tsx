@@ -40,8 +40,6 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         <meta property="og:title" content={pageTitle} />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:card" content="summary_large_image" />
-
-        <title>{pageTitle}</title>
         <Meta />
         <Links />
       </head>
