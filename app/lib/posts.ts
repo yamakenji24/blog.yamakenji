@@ -6,7 +6,7 @@ import { markDownToHtml } from './markDownToHtml';
 type MetaData = {
   title: string;
   description: string;
-  category: Array<string>;
+  category: string;
   tags: Array<string>;
   createdAt: string;
   updatedAt: string;
