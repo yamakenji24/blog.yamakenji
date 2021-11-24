@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {
-  Link,
   Links,
   LiveReload,
   Meta,
@@ -12,26 +11,14 @@ import {
 } from 'remix';
 import type { LinksFunction } from 'remix';
 import { usePageTitle } from './hooks/usePageTitle';
+import { Header, Footer } from './components/common';
 
 import styles from './styles/app.css';
 
-/**
- * The `links` export is a function that returns an array of objects that map to
- * the attributes for an HTML `<link>` element. These will load `<link>` tags on
- * every route in the app, but individual routes can include their own links
- * that are automatically unloaded when a user navigates away from the route.
- *
- * https://remix.run/api/app#links
- */
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }];
 };
 
-/**
- * The root module's default export is a component that renders the current
- * route via the `<Outlet />` component. Think of this as the global layout
- * component for your app.
- */
 export default function App() {
   return (
     <Document>
@@ -72,33 +59,9 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
 function Layout({ children }: React.PropsWithChildren<Record<string, unknown>>) {
   return (
     <div>
-      <header className="bg-purple-600">
-        <div className="bg-purple-600">
-          <nav aria-label="Main navigation" className="remix-app__header-nav">
-            <ul>
-              <li>
-                <Link to="/">Home</Link>
-              </li>
-              <li>
-                <a href="https://remix.run/docs">Remix Docs</a>
-              </li>
-              <li>
-                <a href="https://github.com/remix-run/remix">GitHub</a>
-              </li>
-            </ul>
-          </nav>
-        </div>
-      </header>
-
-      <div className="remix-app__main">
-        <div className="container remix-app__main-content">{children}</div>
-      </div>
-
-      <footer className="remix-app__footer">
-        <div className="container remix-app__footer-content">
-          <p>&copy; You!</p>
-        </div>
-      </footer>
+      <Header />
+      <div className="min-h-screen">{children}</div>
+      <Footer />
     </div>
   );
 }
