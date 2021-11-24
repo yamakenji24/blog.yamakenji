@@ -60,7 +60,7 @@ function Layout({ children }: React.PropsWithChildren<Record<string, unknown>>) 
   return (
     <div>
       <Header />
-      <div className="min-h-screen">{children}</div>
+      <div className="min-h-screen m-4">{children}</div>
       <Footer />
     </div>
   );
