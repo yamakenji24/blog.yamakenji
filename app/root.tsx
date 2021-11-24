@@ -11,6 +11,7 @@ import {
   useLocation,
 } from 'remix';
 import type { LinksFunction } from 'remix';
+import { usePageTitle } from './hooks/usePageTitle';
 
 import styles from './styles/app.css';
 
@@ -42,12 +43,18 @@ export default function App() {
 }
 
 function Document({ children, title }: { children: React.ReactNode; title?: string }) {
+  const pageTitle = usePageTitle(title);
+
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        {title ? <title>{title}</title> : null}
+        <meta property="og:title" content={pageTitle} />
+        <meta name="twitter:title" content={pageTitle} />
+        <meta name="twitter:card" content="summary_large_image" />
+
+        <title>{pageTitle}</title>
         <Meta />
         <Links />
       </head>
