@@ -40,8 +40,6 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         <meta property="og:title" content={pageTitle} />
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:card" content="summary_large_image" />
-
-        <title>{pageTitle}</title>
         <Meta />
         <Links />
       </head>
@@ -60,7 +58,7 @@ function Layout({ children }: React.PropsWithChildren<Record<string, unknown>>) 
   return (
     <div>
       <Header />
-      <div className="min-h-screen">{children}</div>
+      <div className="min-h-screen m-4">{children}</div>
       <Footer />
     </div>
   );
