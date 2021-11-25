@@ -1,14 +1,18 @@
 import * as React from 'react';
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { useLoaderData, json } from 'remix';
-import { usePageDescription } from '../hooks/usePageDesciption';
-import { usePageTitle } from '~/hooks/usePageTitle';
+import { usePageDescription, usePageTitle } from '~/hooks';
 import { getAllPosts, PostData } from '~/lib/posts';
-import { BreadCrumb } from '~/components/common';
+import { BreadCrumb, SideBar } from '~/components/common';
+import { BlogListLayout } from '~/components/blog/BlogListLayout';
 
 export const loader: LoaderFunction = async () => {
   const posts = await getAllPosts();
-  return json(posts);
+  return json(posts, {
+    headers: {
+      'Cache-Control': 'private, max-age=3600',
+    },
+  });
 };
 
 // https://remix.run/api/conventions#meta
@@ -24,20 +28,19 @@ export const meta: MetaFunction = () => {
 
 // https://remix.run/guides/routing#index-routes
 export default function Index() {
-  const data = useLoaderData<Array<PostData>>();
+  const posts = useLoaderData<PostData[]>();
 
-  if (!data) {
+  if (!posts.length) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div>
+    <div className="flex-col">
       <BreadCrumb />
-      {data.map((post) => (
-        <div key={post.metaData.title}>
-          <h2>{post.metaData.title}</h2>
-        </div>
-      ))}
+      <div className="md:flex">
+        <BlogListLayout posts={posts} />
+        <SideBar />
+      </div>
     </div>
   );
 }
