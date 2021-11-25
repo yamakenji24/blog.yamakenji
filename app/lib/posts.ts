@@ -7,7 +7,7 @@ type MetaData = {
   title: string;
   description: string;
   category: string;
-  tags: Array<string>;
+  tags: string[];
   createdAt: string;
   updatedAt: string;
 };
@@ -20,7 +20,7 @@ export type PostData = {
 
 const postsDirPath = path.join(process.cwd(), 'data', 'posts');
 
-async function getPostFiles(): Promise<Array<string>> {
+async function getPostFiles(): Promise<string[]> {
   return await fs.readdirSync(postsDirPath);
 }
 
@@ -67,7 +67,7 @@ export async function readPostFile(post: string): Promise<PostData> {
   };
 }
 
-export async function getAllPosts(): Promise<Array<PostData>> {
+export async function getAllPosts(): Promise<PostData[]> {
   const postFiles = await getPostFiles();
   const __posts = await Promise.all(postFiles.map(readPostFile));
   const posts = __posts.sort((a, b) => (a.metaData.createdAt < b.metaData.createdAt ? 1 : -1));
