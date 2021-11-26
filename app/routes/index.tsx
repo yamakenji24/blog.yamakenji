@@ -18,12 +18,8 @@ export const loader: LoaderFunction = async () => {
     getAllTags(),
     getAllCategories(),
   ]);
-  console.log('tags: ', tags);
-  const data: LoaderData = {
-    posts,
-    tags,
-    categories,
-  };
+
+  const data: LoaderData = { posts, tags, categories };
   return json(data, {
     headers: {
       'Cache-Control': 'private, max-age=3600',
