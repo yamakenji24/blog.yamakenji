@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Link } from 'remix';
-import { BiTime } from 'react-icons/bi';
 import { PostData } from '~/lib/posts';
-import { Tag } from '~/components/common';
+import { DateLayout, Tag } from '~/components/common';
 
 type Props = {
   posts: PostData[];
@@ -16,10 +15,7 @@ function BlogListLayout({ posts }: Props) {
           <Link to={'/blog/' + post.slug}>
             <h2 className="font-bold">{post.metaData.title}</h2>
 
-            <div className="flex my-1">
-              <BiTime />
-              <p className="text-xs mx-1">{post.metaData.createdAt}</p>
-            </div>
+            <DateLayout date={post.metaData.createdAt} />
 
             <p className="text-sm">{post.metaData.description}</p>
           </Link>
