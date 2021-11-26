@@ -1,13 +1,13 @@
 
 {
-  "builds": [
-    {
-      "env": {
-        "ENABLE_FILE_SYSTEM_API": "1"
-      },
-      "config": {
-        "includeFiles": "data/**"
-      }
+  "build": {
+    "env": {
+      "ENABLE_FILE_SYSTEM_API": "1",
     }
-  ]
+  },
+  "builds": [{
+    "config": {
+      "includeFiles": "data/**"
+    }
+  }]
 }
