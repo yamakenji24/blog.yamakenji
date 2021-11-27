@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { Link } from 'remix';
-import { PostData } from '~/lib/posts';
 
 type Props = {
-  post?: PostData;
+  name?: string;
+  to?: string;
 };
 
-function BreadCrumb({ post }: Props) {
+function BreadCrumb({ name, to }: Props) {
   return (
     <nav className="bg-grey-light rounded w-full my-4">
       <ol className="list-reset flex text-grey-dark">
@@ -16,14 +16,14 @@ function BreadCrumb({ post }: Props) {
           </Link>
         </li>
 
-        {post && (
+        {to && name && (
           <>
             <li>
               <span className="mx-2">＞</span>
             </li>
             <li className="hover:bg-green-50 hover:border-gray-300">
-              <Link to={'/category/' + post.slug} prefetch="intent">
-                {post.metaData.category}
+              <Link to={to} prefetch="intent">
+                {name}
               </Link>
             </li>
           </>

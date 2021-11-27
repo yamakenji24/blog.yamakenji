@@ -38,26 +38,28 @@ export const meta: MetaFunction = ({ data }) => {
 };
 
 export default function BlogPost() {
-  const data = useLoaderData<LoaderData>();
+  const { post, tags, categories } = useLoaderData<LoaderData>();
+  const category = post.metaData.category;
+
   return (
     <div className="flex-col">
-      <BreadCrumb post={data.post} />
+      <BreadCrumb to={'/category/' + category} name={category} />
       <div className="md:flex">
         <div className="w-full md:w-5/6">
-          <h1 className="text-2xl font-bold">{data.post.metaData.title}</h1>
-          <DateLayout date={data.post.metaData.createdAt} />
+          <h1 className="text-2xl font-bold">{post.metaData.title}</h1>
+          <DateLayout date={post.metaData.createdAt} />
           <div className="flex">
             <p className="text-xs inline-flex items-center font-bold leading-sm p-1 m-1 border border-blue-500 text-blue-600 rounded-md">
-              {data.post.metaData.category}
+              {category}
             </p>
-            {data.tags.map((tag) => (
+            {tags.map((tag) => (
               <Tag key={tag} name={tag} />
             ))}
           </div>
-          <div dangerouslySetInnerHTML={{ __html: data.post.content }} />
+          <div dangerouslySetInnerHTML={{ __html: post.content }} />
         </div>
 
-        <SideBar tags={data.tags} categories={data.categories} />
+        <SideBar tags={tags} categories={categories} />
       </div>
     </div>
   );
