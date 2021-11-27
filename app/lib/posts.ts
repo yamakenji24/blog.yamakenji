@@ -86,3 +86,8 @@ export async function getAllCategories(): Promise<string[]> {
   const categories = posts.map((post) => post.metaData.category);
   return Array.from(new Set(categories));
 }
+
+export async function getPostsByCategory(category: string) {
+  const posts = await getAllPosts();
+  return posts.filter((post) => post.metaData.category === category);
+}
