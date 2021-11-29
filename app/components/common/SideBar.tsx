@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { Link } from 'remix';
-import { Tag } from '~/components/common';
+import { Tag, LinkLayout } from '~/components/common';
 
 type Props = {
   categories: string[];
@@ -12,15 +11,15 @@ function SideBar({ categories, tags }: Props) {
     <div className="flex-col mx-2 w-1/5">
       <h3 className="font-bold rounded-md text-xl bg-green-100 p-1 my-2">Categories</h3>
       {categories.map((category) => (
-        <Link key={category} to={'/category/' + category}>
+        <LinkLayout key={category} to={'/category/' + category} prefetch="intent">
           <p className="text-xs mx-2 p-1 hover:bg-green-100">{category}</p>
-        </Link>
+        </LinkLayout>
       ))}
       <h3 className="font-bold rounded-md text-xl bg-green-100 p-1 my-2">Tags</h3>
       {tags.map((tag) => (
-        <div key={tag}>
+        <LinkLayout key={tag} to={'/tag/' + tag} prefetch="intent">
           <Tag name={tag} color="text-gray-600" />
-        </div>
+        </LinkLayout>
       ))}
     </div>
   );

@@ -91,3 +91,8 @@ export async function getPostsByCategory(category: string) {
   const posts = await getAllPosts();
   return posts.filter((post) => post.metaData.category === category);
 }
+
+export async function getPostsByTag(tag: string): Promise<PostData[]> {
+  const posts = await getAllPosts();
+  return posts.filter((post) => post.metaData.tags.includes(tag));
+}

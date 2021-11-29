@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Link } from 'remix';
+import { LinkLayout } from './LinkLayout';
 
 type Props = {
   name?: string;
@@ -11,9 +11,9 @@ function BreadCrumb({ name, to }: Props) {
     <nav className="bg-grey-light rounded w-full my-4">
       <ol className="list-reset flex text-grey-dark">
         <li className="hover:bg-green-50 hover:border-gray-300">
-          <Link to="/" prefetch="intent">
-            記事一覧
-          </Link>
+          <LinkLayout to="/" prefetch="intent">
+            <p>記事一覧</p>
+          </LinkLayout>
         </li>
 
         {to && name && (
@@ -22,9 +22,9 @@ function BreadCrumb({ name, to }: Props) {
               <span className="mx-2">＞</span>
             </li>
             <li className="hover:bg-green-50 hover:border-gray-300">
-              <Link to={to} prefetch="intent">
-                {name}
-              </Link>
+              <LinkLayout to={to} prefetch="intent">
+                <p>{name}</p>
+              </LinkLayout>
             </li>
           </>
         )}
