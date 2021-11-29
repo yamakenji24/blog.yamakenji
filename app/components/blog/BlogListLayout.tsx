@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { Link } from 'remix';
 import { PostData } from '~/lib/posts';
-import { DateLayout, Tag } from '~/components/common';
+import { DateLayout, Tag, LinkLayout } from '~/components/common';
 
 type Props = {
   posts: PostData[];
@@ -12,21 +11,22 @@ function BlogListLayout({ posts }: Props) {
     <div className="w-full md:w-5/6">
       {posts.map((post) => (
         <div key={post.metaData.title} className="border m-1 p-2 rounded">
-          <Link to={'/blog/' + post.slug} prefetch="intent">
+          <LinkLayout to={'/blog/' + post.slug} prefetch="intent">
             <h2 className="font-bold">{post.metaData.title}</h2>
-
             <DateLayout date={post.metaData.createdAt} />
-
             <p className="text-sm">{post.metaData.description}</p>
-          </Link>
+          </LinkLayout>
           <div className="flex">
-            <Link to={'/category/' + post.metaData.category} prefetch="render">
+            <LinkLayout to={'/category/' + post.metaData.category} prefetch="intent">
               <p className="text-xs inline-flex items-center font-bold leading-sm p-1 m-1 border border-blue-500 text-blue-600 rounded-md hover:bg-blue-100">
                 {post.metaData.category}
               </p>
-            </Link>
+            </LinkLayout>
+
             {post.metaData.tags.map((tag) => (
-              <Tag key={tag} name={tag} />
+              <LinkLayout key={tag} to={'/tag/' + tag} prefetch="intent">
+                <Tag name={tag} />
+              </LinkLayout>
             ))}
           </div>
         </div>
