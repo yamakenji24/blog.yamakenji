@@ -24,7 +24,7 @@ export const loader: LoaderFunction = async (content: any) => {
   const data: LoaderData = { posts, tags, categories, category };
   return json(data, {
     headers: {
-      'Cache-Control': 'private, max-age=3600',
+      'Cache-Control': 's-maxage=1, stale-while-revalidate',
     },
   });
 };
