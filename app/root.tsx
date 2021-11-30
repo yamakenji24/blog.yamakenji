@@ -8,21 +8,42 @@ import {
   ScrollRestoration,
   useCatch,
   useLocation,
+  useLoaderData,
+  json,
 } from 'remix';
-import type { LinksFunction } from 'remix';
+import type { LinksFunction, LoaderFunction } from 'remix';
 import { usePageTitle } from './hooks/usePageTitle';
-import { Header, Footer } from './components/common';
+import { Header, Footer, SideBar } from './components/common';
+import { getAllTags, getAllCategories } from '~/lib/posts';
 
 import styles from './styles/app.css';
+
+type LoaderData = {
+  tags: string[];
+  categories: string[];
+};
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }];
 };
 
+export const loader: LoaderFunction = async () => {
+  const [tags, categories] = await Promise.all([getAllTags(), getAllCategories()]);
+  const data: LoaderData = { tags, categories };
+
+  return json(data, {
+    headers: {
+      'Cache-Control': 's-maxage=1, stale-while-revalidate',
+    },
+  });
+};
+
 export default function App() {
+  const { tags, categories } = useLoaderData<LoaderData>();
+
   return (
     <Document>
-      <Layout>
+      <Layout tags={tags} categories={categories}>
         <Outlet />
       </Layout>
     </Document>
@@ -53,12 +74,18 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
     </html>
   );
 }
+type Props = {
+  children: React.PropsWithChildren<Record<any, any>>;
+} & LoaderData;
 
-function Layout({ children }: React.PropsWithChildren<Record<string, unknown>>) {
+function Layout({ children, tags, categories }: Props) {
   return (
     <div>
       <Header />
-      <div className="min-h-screen m-4">{children}</div>
+      <div className="min-h-screen m-4 flex flex-col md:flex-row">
+        <div className="w-full md:w-5/6">{children}</div>
+        <SideBar tags={tags} categories={categories} />
+      </div>
       <Footer />
     </div>
   );
@@ -82,7 +109,7 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout>
+      <Layout tags={[]} categories={[]}>
         <h1>
           {caught.status}: {caught.statusText}
         </h1>
@@ -96,7 +123,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
   return (
     <Document title="Error!">
-      <Layout>
+      <Layout tags={[]} categories={[]}>
         <div>
           <h1>There was an error</h1>
           <p>{error.message}</p>
