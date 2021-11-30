@@ -8,7 +8,7 @@ type Props = {
 
 function SideBar({ categories, tags }: Props) {
   return (
-    <div className="flex-col mx-2 w-1/5">
+    <div className="flex-col mx-2 w-full md:w-1/5 ">
       <h3 className="font-bold rounded-md text-xl bg-green-100 p-1 my-2">Categories</h3>
       {categories.map((category) => (
         <LinkLayout key={category} to={'/category/' + category} prefetch="intent">
