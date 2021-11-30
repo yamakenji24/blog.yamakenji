@@ -74,7 +74,7 @@ export async function getAllPosts(): Promise<PostData[]> {
 
   return posts;
 }
-// Todo 不要なリクエストを減らす
+
 export async function getAllTags(): Promise<string[]> {
   const posts = await getAllPosts();
   const tags = posts.map((post) => post.metaData.tags).flat();
