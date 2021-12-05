@@ -1,2 +1,1 @@
-export * from './usePageDesciption';
-export * from './usePageTitle';
+export * from './useMetaGetter';
