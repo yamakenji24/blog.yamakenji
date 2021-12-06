@@ -1,7 +1,7 @@
 import * as React from 'react';
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { useLoaderData, json } from 'remix';
-import { usePageDescription, usePageTitle } from '~/hooks';
+import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
 import { getAllPosts, PostData } from '~/lib/posts';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
@@ -16,7 +16,7 @@ export const loader: LoaderFunction = async () => {
 
   return json(data, {
     headers: {
-      'Cache-Control': 's-maxage=1, stale-while-revalidate',
+      'Cache-Control': 'public, max-age=60 s-maxage=60',
     },
   });
 };
@@ -25,10 +25,15 @@ export const loader: LoaderFunction = async () => {
 export const meta: MetaFunction = () => {
   const description = usePageDescription();
   const title = usePageTitle();
+  const ogImage = useOGImageUrl();
+
   return {
     title: title,
     description: description,
     'og:description': description,
+    'og:title': title,
+    'og:image': ogImage,
+    'twitter:image': ogImage,
   };
 };
 

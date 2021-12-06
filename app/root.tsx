@@ -12,7 +12,7 @@ import {
   json,
 } from 'remix';
 import type { LinksFunction, LoaderFunction } from 'remix';
-import { usePageTitle } from './hooks/usePageTitle';
+import { usePageTitle } from './hooks';
 import { Header, Footer, SideBar } from './components/common';
 import { getAllTags, getAllCategories } from '~/lib/posts';
 
@@ -33,7 +33,7 @@ export const loader: LoaderFunction = async () => {
 
   return json(data, {
     headers: {
-      'Cache-Control': 's-maxage=1, stale-while-revalidate',
+      'Cache-Control': `public, max-age=${60 * 10} s-maxage=${60 * 60}`,
     },
   });
 };
@@ -58,7 +58,9 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <meta property="og:title" content={pageTitle} />
+        <meta property="og:type" content="article" />
+        <meta name="og:site_name" content={pageTitle} />
+
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:card" content="summary_large_image" />
         <Meta />

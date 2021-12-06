@@ -1,4 +1,4 @@
-import { DEFAULT_PAGE_TITLE, usePageTitle } from '../../hooks/usePageTitle';
+import { DEFAULT_PAGE_TITLE, usePageTitle } from '../../hooks';
 import { renderHook } from '@testing-library/react-hooks';
 
 describe('usePageTitle', () => {
