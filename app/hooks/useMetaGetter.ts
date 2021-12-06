@@ -15,7 +15,9 @@ export const usePageTitle = (title?: string) => {
 export const useOGImageUrl = (title?: string) => {
   return useMemo(
     () =>
-      title ? `${DEFAULT_OG_IMAGE_URL}${title}` : `${DEFAULT_OG_IMAGE_URL}${DEFAULT_PAGE_TITLE}`,
+      title
+        ? `${DEFAULT_OG_IMAGE_URL}${encodeURI(title)}.png`
+        : `${DEFAULT_OG_IMAGE_URL}${encodeURI(DEFAULT_PAGE_TITLE)}.png`,
     [title],
   );
 };
