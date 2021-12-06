@@ -1,4 +1,4 @@
-import { DESCRIPTION, usePageDescription } from '../../hooks/usePageDesciption';
+import { DESCRIPTION, usePageDescription } from '../../hooks';
 import { renderHook } from '@testing-library/react-hooks';
 
 describe('usePageDescription', () => {
