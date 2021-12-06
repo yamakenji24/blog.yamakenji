@@ -60,6 +60,7 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
         <meta name="viewport" content="width=device-width,initial-scale=1" />
         <meta property="og:type" content="article" />
         <meta name="og:site_name" content={pageTitle} />
+        <meta name="og:url" content="https://blog.yamakenji.com/" />
 
         <meta name="twitter:title" content={pageTitle} />
         <meta name="twitter:card" content="summary_large_image" />
