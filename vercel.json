@@ -1,17 +1,9 @@
 {
-  "builds": [
-    {
-      "src": "public/**/*",
-      "use": "@vercel/static"
-    },
-    {
-      "src": "server/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": "data/**"
-      }
+  "functions": {
+    "server/index.js": {
+      "includeFiles": "data/**"
     }
-  ],
+  },
   "rewrites": [
     {
       "source": "/(.*)",
