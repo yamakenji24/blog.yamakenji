@@ -42,11 +42,11 @@ export default function BlogPost() {
     <div className="flex-col">
       <BreadCrumb to={'/category/' + category} name={category} />
       <div className="md:flex">
-        <div className="w-full md:w-5/6">
+        <div className="w-full md:pl-4">
           <h1 className="text-2xl font-bold">{post.metaData.title}</h1>
           <DateLayout date={post.metaData.createdAt} />
           <ClassifyLayout category={category} tags={post.metaData.tags} />
-          <div dangerouslySetInnerHTML={{ __html: post.content }} />
+          <div className="prose prose-blue" dangerouslySetInnerHTML={{ __html: post.content }} />
         </div>
       </div>
     </div>

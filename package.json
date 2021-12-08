@@ -23,6 +23,7 @@
     "@remix-run/react": "^1.0.4",
     "@remix-run/serve": "^1.0.4",
     "@remix-run/vercel": "^1.0.4",
+    "@tailwindcss/typography": "^0.4.1",
     "@vercel/node": "^1.12.1",
     "framer-motion": "^4.1.17",
     "gray-matter": "^4.0.3",
@@ -31,7 +32,7 @@
     "react-icons": "^4.3.1",
     "remark": "^14.0.2",
     "remark-gfm": "^3.0.1",
-    "remark-html": "^15.0.0",
+    "remark-html": "^14.0.1",
     "remix": "^1.0.4"
   },
   "devDependencies": {

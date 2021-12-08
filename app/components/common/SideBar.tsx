@@ -12,7 +12,7 @@ function SideBar({ categories, tags }: Props) {
       <h3 className="font-bold rounded-md text-xl bg-green-100 p-1 my-2">Categories</h3>
       {categories.map((category) => (
         <LinkLayout key={category} to={'/category/' + category} prefetch="intent">
-          <p className="text-xs mx-2 p-1 hover:bg-green-100">{category}</p>
+          <p className="text-sm mx-2 p-1 hover:bg-green-100">{category}</p>
         </LinkLayout>
       ))}
       <h3 className="font-bold rounded-md text-xl bg-green-100 p-1 my-2">Tags</h3>

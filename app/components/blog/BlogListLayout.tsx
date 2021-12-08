@@ -9,7 +9,7 @@ type Props = {
 
 function BlogListLayout({ posts }: Props) {
   return (
-    <div>
+    <div className="md:pl-4">
       {posts.map((post) => (
         <div key={post.metaData.title} className="border m-1 p-2 rounded">
           <LinkLayout to={'/blog/' + post.slug} prefetch="intent">

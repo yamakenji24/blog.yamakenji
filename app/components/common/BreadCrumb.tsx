@@ -8,7 +8,7 @@ type Props = {
 
 function BreadCrumb({ name, to }: Props) {
   return (
-    <nav className="bg-grey-light rounded w-full my-4">
+    <nav className="bg-grey-light rounded w-full my-4 md:pl-4">
       <ol className="list-reset flex text-grey-dark">
         <li className="hover:bg-green-50 hover:border-gray-300">
           <LinkLayout to="/" prefetch="intent">
