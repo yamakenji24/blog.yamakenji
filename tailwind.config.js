@@ -5,7 +5,15 @@ module.exports = {
   purge: ['./app/**/*.tsx'],
   darkMode: false,
   theme: {
-    extend: {},
+    extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            maxWidth: '100%',
+          },
+        },
+      }
+    },
   },
   variants: {},
   plugins: [require('@tailwindcss/typography')],
