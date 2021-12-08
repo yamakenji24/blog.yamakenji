@@ -19,7 +19,7 @@ tags:
 詳細なコードに関しては、GitHubからご覧ください。[blog.yamakenji](https://github.com/yamakenji24/blog.yamakenji)
 
 ## 技術構成  
-- Remix v1.0.4
+- Remix v1.0.6
 - TypeScript
 - Tailwind
 - remark
