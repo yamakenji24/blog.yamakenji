@@ -1,11 +1,12 @@
-module.exports = {
-  purge: [
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const plugin = require('tailwindcss/plugin');
 
-  ],
-  darkMode: false, 
+module.exports = {
+  purge: ['./app/**/*.tsx'],
+  darkMode: false,
   theme: {
-    extend: {}
+    extend: {},
   },
   variants: {},
-  plugins: []
+  plugins: [require('@tailwindcss/typography')],
 };
