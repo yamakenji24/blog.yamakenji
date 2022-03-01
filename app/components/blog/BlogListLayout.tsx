@@ -1,23 +1,22 @@
-import * as React from 'react';
-import { PostData } from '~/lib/posts';
+import { Blog } from '~/lib/blogs';
 import { ClassifyLayout } from './ClassifyLayout';
 import { DateLayout, LinkLayout } from '~/components/common';
 
 type Props = {
-  posts: PostData[];
+  blogs: Blog[];
 };
 
-function BlogListLayout({ posts }: Props) {
+function BlogListLayout({ blogs }: Props) {
   return (
     <div className="md:pl-4">
-      {posts.map((post) => (
-        <div key={post.metaData.title} className="border m-1 p-2 rounded">
-          <LinkLayout to={'/blog/' + post.slug} prefetch="intent">
-            <h2 className="font-bold">{post.metaData.title}</h2>
-            <DateLayout date={post.metaData.createdAt} />
-            <p className="text-sm">{post.metaData.description}</p>
+      {blogs.map((blog) => (
+        <div key={blog.title} className="border m-1 p-2 rounded">
+          <LinkLayout to={'/blog/' + blog.slug} prefetch="intent">
+            <h2 className="font-bold">{blog.title}</h2>
+            <DateLayout createdAt={blog.createdAt} updatedAt={blog.updatedAt} />
+            <p className="text-sm">{blog.description}</p>
           </LinkLayout>
-          <ClassifyLayout category={post.metaData.category} tags={post.metaData.tags} />
+          <ClassifyLayout category={blog.category} tags={blog.tags} />
         </div>
       ))}
     </div>

@@ -1,19 +1,19 @@
 import { useLoaderData, json } from 'remix';
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
-import { getPostsByCategory, PostData } from '~/lib/posts';
+import { getBlogsByCategory, Blog } from '~/lib/blogs';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
 
 type LoaderData = {
-  posts: PostData[];
+  blogs: Blog[];
   category: string;
 };
 
 export const loader: LoaderFunction = async (content: any) => {
   const category = content.params.slug;
-  const posts = await getPostsByCategory(category);
-  const data: LoaderData = { posts, category };
+  const blogs = await getBlogsByCategory(category);
+  const data: LoaderData = { blogs, category };
 
   return json(data, {
     headers: {
@@ -38,12 +38,12 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Category() {
-  const { posts, category } = useLoaderData<LoaderData>();
+  const { blogs, category } = useLoaderData<LoaderData>();
 
   return (
     <div className="flex-col">
       <BreadCrumb to={'/category/' + category} name={category} />
-      <BlogListLayout posts={posts} />
+      <BlogListLayout blogs={blogs} />
     </div>
   );
 }

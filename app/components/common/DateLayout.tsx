@@ -1,11 +1,13 @@
-import * as React from 'react';
 import { BiTime } from 'react-icons/bi';
+import { MdUpdate } from 'react-icons/md';
 
-function DateLayout({ date }: { date: string }) {
+function DateLayout({ createdAt, updatedAt }: { createdAt: string; updatedAt?: string }) {
   return (
     <div className="flex my-1">
       <BiTime />
-      <p className="text-xs mx-1">{date}</p>
+      <p className="text-xs mx-1">{createdAt}</p>
+      <MdUpdate />
+      <p className="text-xs mx-1">{updatedAt}</p>
     </div>
   );
 }

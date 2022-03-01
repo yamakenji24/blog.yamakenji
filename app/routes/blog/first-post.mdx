@@ -1,14 +1,23 @@
 ---
 title: "個人ブログを開設しました"
 createdAt: "2021/12/09"
+updatedAt: "2022/03/01"
 description: "Remixを用いたブログを開設しました。技術的メモや参加報告、ブログ的な内容はここで紹介していきます。"
-category: Programming
+category: "Programming"
 tags:
   - Announcement
   - React
   - Remix
+meta:
+  title: "個人ブログを開設しました | yamakenji blog"
+  description: "Remixを用いたブログを開設しました。技術的メモや参加報告、ブログ的な内容はここで紹介していきます。"
+  og:description: "Remixを用いたブログを開設しました。技術的メモや参加報告、ブログ的な内容はここで紹介していきます。"
+  og:image: "https://og-image-yamakenji.vercel.app/個人ブログを開設しました.png"
+  twitter:image: "https://og-image-yamakenji.vercel.app/個人ブログを開設しました.png"
 ---
+import { BlogLayout } from '../../components/blog/BlogLayout';
 
+<BlogLayout {...attributes}>
 こんにちは、@yamakenjiです。  
 この記事は、[SLP KBIT Advent Calendar 2021](https://adventar.org/calendars/6706)の9日目の記事です。  
 
@@ -18,11 +27,14 @@ tags:
 本記事では、主に実装した機能とVercelへのデプロイ周辺に関して説明していきます。  
 詳細なコードに関しては、GitHubからご覧ください。[blog.yamakenji](https://github.com/yamakenji24/blog.yamakenji)
 
+## (追記) Remix v1.2.3にアプデ、mdからmdxに変更
+2022年3月1日時点の、Remix v1.2.3にアプデ、mdからmdxに変更しました。
+本記事は元記事に対して、遭遇していたエラーとそれに対する対処を追記しています。
+
 ## 技術構成  
-- Remix v1.0.6
+- Remix v1.2.3
 - TypeScript
 - Tailwind
-- remark
 - Vercel
 
 ## Remixとは  
@@ -41,60 +53,58 @@ SSRでFetchしたデータは、クライアントに空のレスポンスを返
 
 ## 実装
 ということで実装していきます。  
-今回主に実装したのは、ファイル読み込みからhtmlへの変換、タグ、カテゴリー一覧の抽出、OGP画像の生成です。  
+今回主に実装したのは、mdxの記述、タグ、カテゴリー一覧の抽出、OGP画像の生成です。  
 
-### MarkdownからHTMLへの変換
-Remixでは、route下にmdxを配置することで、そのまま表示することができますが、今回はremarkを使ってmarkdownをhtmlに変換していきます。
+### MDXへの対応
+元記事では、記事をmarkdownで管理し、remarkでhtmlに変換していました。
+しかし、Vercelがremixでのfilesystemを正式に対応しておらず、
+記事をdbで管理するか、GitHub APIを通して取得するかの方法しかありませんでした。
+(正確には、1.0.6以前のバージョンでvercelの設定ファイルを用いて、serverless functions内で参照できるように記述してあげれば使用できましたが、
+Remixのversionをあげた際に対応がめんどくさいので諦めました)
 
-```ts:markDownToHtml.ts
-export async function markDownToHtml(content: string): Promise<string> {
-  const [remark, html, gfm] = await Promise.all([
-    import('remark').then(mod => mod.remark),
-    import ('remark-html').then(mod => mod.default),
-    import ('remark-gfm').then(mod => mod.default),
-  ]);
+Remixでは、標準でMDXに対応しており、route下に配置することで表示が可能です。
+また、記事一覧として、各記事情報を取得するには、全てのMDXをimportする必要があります。
+正直、記事が増えるたびにimportする必要があり、拡張性がない方法です。
+公式でもそのように言及されていますが、「記事を書くのは大変なことであり、管理が大変になったという素晴らしい問題に直面してから考えよう」とも記述されています。
+そのため、拡張性については今後の課題とします。
 
-  const result = await remark().use(gfm).use(html).process(content);
-  return result.toString();
-}
+```ts file="blogs.ts"
+import * as firstPost from '../routes/blog/first-post.mdx';
+
+const blogs = [firstPost];
 ```
 
-// Todo  
-codeブロック上のシンタックスハイライトは、後で導入します。(おすすめあったら教えてください)  
+### MDXから属性情報の取得
+全ての記事を取得して、いい感じに管理できるようにします。
 
-### Markdownから記事のデータとして取得する
-全ての記事に対して、MarkdownからHtmlへ変換し、内容とタイトル、メタ情報を連想配列で取得していきます。  
-メタ情報は、ハイフン３つ`---`で囲んだ中身を、gray-matterで抽出しています。
 
-```ts:posts.ts
-const postsDirPath = path.join(process.cwd(), 'data', 'posts');
-
-async function getPostFiles(): Promise<string[]> {
-  return await fs.readdirSync(postsDirPath);
-}
-
-export async function readPostFile(post: string): Promise<PostData> {
-  const slug = post.replace(/\.md$/, '');
-  const fullPath = path.join(postsDirPath, `${slug}.md`);
-  const fileContents = await fs.readFileSync(fullPath, 'utf8');
-  const { data, content } = matter(fileContents);
-
-  if (!data.updatedAt) data.updatedAt = data.createdAt;
-  data.tags = !data.tags ? [] : Array.from(new Set(data.tags));
+```ts file="blogs.ts"
+function postFromModule(mod: any): Blog {
+  const slug: string = mod.filename.replace(/\.mdx$/, '');
+  const updatedAt: string = !mod.attributes.updatedAt ? mod.attributes.createdAt : mod.attributes.updatedAt;
+  const tags: string[] = !mod.attributes.tags ? [] : Array.from(new Set(mod.attributes.tags));
 
   return {
-    slug: slug,
-    content: await markDownToHtml(content),
-    metaData: data,
+    ...mod.attributes,
+    slug,
+    updatedAt,
+    tags,
   };
 }
 
-export async function getAllPosts(): Promise<PostData[]> {
-  const postFiles = await getPostFiles();
-  const __posts = await Promise.all(postFiles.map(readPostFile));
-  const posts = __posts.sort((a, b) => (a.metaData.createdAt < b.metaData.createdAt ? 1 : -1));
+export function getBlogBySlug(slug: string): Blog {
+  const blogs = getAllBlogs();
+  const blog = blogs.find((blog) => blog.slug === slug);
 
-  return posts;
+  if (!blog) {
+    throw new Error(`Blog not found: ${slug}`);
+  }
+
+  return blog;
+}
+
+export function getAllBlogs(): Blog[] {
+  return blogs.map(postFromModule);
 }
 ```
 
@@ -102,16 +112,16 @@ export async function getAllPosts(): Promise<PostData[]> {
 取得した記事一覧から、カテゴリー一覧とタグ一覧を取得していきます。  
 これらの情報は一意に限定されるものであり、重複したものは除外していきます。  
 
-```ts:posts.ts
-export async function getAllTags(): Promise<string[]> {
-  const posts = await getAllPosts();
-  const tags = posts.map((post) => post.metaData.tags).flat();
+```ts file=posts.ts"
+export function getAllTags(): string[] {
+  const blogs = getAllBlogs();
+  const tags = blogs.map((blog) => blog.tags).flat();
   return Array.from(new Set(tags));
 }
 
-export async function getAllCategories(): Promise<string[]> {
-  const posts = await getAllPosts();
-  const categories = posts.map((post) => post.metaData.category);
+export function getAllCategories(): string[] {
+  const blogs = getAllBlogs();
+  const categories = blogs.map((blog) => blog.category);
   return Array.from(new Set(categories));
 }
 ```
@@ -119,7 +129,7 @@ export async function getAllCategories(): Promise<string[]> {
 loaderはRemixが用意しているReactのライフサイクルみたいなモジュールAPIで、レンダリングされる前にサーバー側で呼び出します。また、引数を受け取ることができ、例えば`/$slug`みたいなURLからそのslugの中身を動的に抽出することもできます。  
 一覧データは、全てのコンポーネントで利用することを想定しているため、ルートコンポーネントでloaderから呼び出して、不必要なリクエストを削減します。 
 
-```tsx:root.tsx
+```tsx file="root.tsx"
 export const loader: LoaderFunction = async () => {
   const [tags, categories] = await Promise.all([getAllTags(), getAllCategories()]);
   const data: LoaderData = { tags, categories };
@@ -130,18 +140,17 @@ export const loader: LoaderFunction = async () => {
     },
   });
 };
-
 ```
 
 ### タグ、カテゴリーから記事を取得
 link等で/tag/$slugや/category/$slugにアクセスしたときに、そのタグやカテゴリーに関連する記事を取得していきます。
 loaderで、Route Paramsを取得して、その情報をもとに取得します。  
 例えば、カテゴリーの場合は以下のようになります。  
-```tsx: $slug.tsx
+```tsx file="$slug.tsx"
 export const loader: LoaderFunction = async (content: any) => {
   const category = content.params.slug;
-  const posts = await getPostsByCategory(category);
-  const data: LoaderData = { posts, category };
+  const blogs = await getBlogsByCategory(category);
+  const data: LoaderData = { blogs, category };
 
   return json(data, {
     headers: {
@@ -151,35 +160,25 @@ export const loader: LoaderFunction = async (content: any) => {
 };
 ```
 
-```ts:posts.ts
-export async function getPostsByCategory(category: string) {
-  const posts = await getAllPosts();
-  return posts.filter((post) => post.metaData.category === category);
+```ts file="blogs.ts"
+export function getBlogsByCategory(category: string): Blog[] {
+  return getAllBlogs().filter((blog) => blog.category === category);
 }
 ```
 ### その他
 その他にも、OGPなど、htmlのmeta要素を動的に設定しています。  
 Remixでは、`meta function`をexportすることで、各Routeごとにmeta要素を設定することができます。  
-また、OGP画像の生成として、vercelが公開している[og-image](https://github.com/vercel/og-image)を使用しています。誰でもフォークして、中のテンプレートを編集してデプロイすることで、OGP画像を自分で生成できるので、興味ある人はお試しあれ。  
-
+また、OGP画像の生成として、vercelが公開している[og-image](https://github.com/vercel/og-image)を使用しています。誰でもフォークして、中のテンプレートを編集してデプロイすることで、OGP画像を自分で生成できます。  
 
 ## Vercelにデプロイ
 デプロイ先として、Vercelを使用しています。他にも候補として、Cloudflare Workersがありましたが、他のプロジェクトでVercelを使用していたため、今回はVercelにしました。  
-Remixが公開された直後では、Vercelにデプロイする際にはいくつかの設定が必要でしたが、現在は設定なしでデプロイすることが可能です。  
-なお、今回は外部ファイルを読み込んでの実装になるので、設定していきます。  
-```json
-{
-  ...
-  {
-    "includeFiles": "data/**"
-  }
-  ...
-}
-```
-
+Remixが公開された直後では、Vercelにデプロイする際にはいくつかの設定が必要でしたが、現在は設定なしでデプロイすることが可能です。
+また、devDependenciesにvercelをインストールしていた場合は、23.1.3以上に上げておく必要があります。(インストールしていない場合は、問題なさそうです)
+これは、Remixがzero-configで使用しているバージョンが23.1.3からであり、vercelにデプロイした場合、404エラーの原因になります。
 
 ## まとめ
 Remixを用いて、ブログを構築していきました。  
 自身のブログを開設したので、これからどんどん更新していきたいと思います。  
 また、機能をどんどん追加していきたいと考えていますので、気軽にissueやPRを投げてもらえると嬉しいです。  
 特に、今回は実装していないページネーションなども実装していく予定です。  
+</BlogLayout>

@@ -2,8 +2,7 @@ node_modules
 
 /.cache
 /build
-/server/build
 /public/build
-
+/api
 .vercel
 app/styles
