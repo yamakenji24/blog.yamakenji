@@ -1,18 +1,17 @@
-import * as React from 'react';
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { useLoaderData, json } from 'remix';
 import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
-import { getAllPosts, PostData } from '~/lib/posts';
+import { getAllBlogs, Blog } from '~/lib/blogs';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
 
 type LoaderData = {
-  posts: PostData[];
+  blogs: Blog[];
 };
 
 export const loader: LoaderFunction = async () => {
-  const posts = await getAllPosts();
-  const data: LoaderData = { posts };
+  const blogs = await getAllBlogs();
+  const data: LoaderData = { blogs };
 
   return json(data, {
     headers: {
@@ -39,12 +38,12 @@ export const meta: MetaFunction = () => {
 
 // https://remix.run/guides/routing#index-routes
 export default function Index() {
-  const { posts } = useLoaderData<LoaderData>();
+  const { blogs } = useLoaderData<LoaderData>();
 
   return (
     <div className="flex-col">
       <BreadCrumb />
-      <BlogListLayout posts={posts} />
+      <BlogListLayout blogs={blogs} />
     </div>
   );
 }

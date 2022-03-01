@@ -2,13 +2,21 @@
 title: "個人ブログを開設しました"
 createdAt: "2021/12/09"
 description: "Remixを用いたブログを開設しました。技術的メモや参加報告、ブログ的な内容はここで紹介していきます。"
-category: Programming
+category: "Programming"
 tags:
   - Announcement
   - React
   - Remix
+meta:
+  title: "個人ブログを開設しました | yamakenji blog"
+  description: "Remixを用いたブログを開設しました。技術的メモや参加報告、ブログ的な内容はここで紹介していきます。"
+  og:description: "Remixを用いたブログを開設しました。技術的メモや参加報告、ブログ的な内容はここで紹介していきます。"
+  og:image: "https://og-image-yamakenji.vercel.app/個人ブログを開設しました.png"
+  twitter:image: "https://og-image-yamakenji.vercel.app/個人ブログを開設しました.png"
 ---
+import { BlogLayout } from '../../components/blog/BlogLayout';
 
+<BlogLayout {...attributes}>
 こんにちは、@yamakenjiです。  
 この記事は、[SLP KBIT Advent Calendar 2021](https://adventar.org/calendars/6706)の9日目の記事です。  
 
@@ -46,7 +54,7 @@ SSRでFetchしたデータは、クライアントに空のレスポンスを返
 ### MarkdownからHTMLへの変換
 Remixでは、route下にmdxを配置することで、そのまま表示することができますが、今回はremarkを使ってmarkdownをhtmlに変換していきます。
 
-```ts:markDownToHtml.ts
+```ts file="markDownToHtml.ts"
 export async function markDownToHtml(content: string): Promise<string> {
   const [remark, html, gfm] = await Promise.all([
     import('remark').then(mod => mod.remark),
@@ -66,7 +74,7 @@ codeブロック上のシンタックスハイライトは、後で導入しま�
 全ての記事に対して、MarkdownからHtmlへ変換し、内容とタイトル、メタ情報を連想配列で取得していきます。  
 メタ情報は、ハイフン３つ`---`で囲んだ中身を、gray-matterで抽出しています。
 
-```ts:posts.ts
+```ts file="posts.ts"
 const postsDirPath = path.join(process.cwd(), 'data', 'posts');
 
 async function getPostFiles(): Promise<string[]> {
@@ -102,7 +110,7 @@ export async function getAllPosts(): Promise<PostData[]> {
 取得した記事一覧から、カテゴリー一覧とタグ一覧を取得していきます。  
 これらの情報は一意に限定されるものであり、重複したものは除外していきます。  
 
-```ts:posts.ts
+```ts file=posts.ts"
 export async function getAllTags(): Promise<string[]> {
   const posts = await getAllPosts();
   const tags = posts.map((post) => post.metaData.tags).flat();
@@ -119,7 +127,7 @@ export async function getAllCategories(): Promise<string[]> {
 loaderはRemixが用意しているReactのライフサイクルみたいなモジュールAPIで、レンダリングされる前にサーバー側で呼び出します。また、引数を受け取ることができ、例えば`/$slug`みたいなURLからそのslugの中身を動的に抽出することもできます。  
 一覧データは、全てのコンポーネントで利用することを想定しているため、ルートコンポーネントでloaderから呼び出して、不必要なリクエストを削減します。 
 
-```tsx:root.tsx
+```tsx file="root.tsx"
 export const loader: LoaderFunction = async () => {
   const [tags, categories] = await Promise.all([getAllTags(), getAllCategories()]);
   const data: LoaderData = { tags, categories };
@@ -137,7 +145,7 @@ export const loader: LoaderFunction = async () => {
 link等で/tag/$slugや/category/$slugにアクセスしたときに、そのタグやカテゴリーに関連する記事を取得していきます。
 loaderで、Route Paramsを取得して、その情報をもとに取得します。  
 例えば、カテゴリーの場合は以下のようになります。  
-```tsx: $slug.tsx
+```tsx file="$slug.tsx"
 export const loader: LoaderFunction = async (content: any) => {
   const category = content.params.slug;
   const posts = await getPostsByCategory(category);
@@ -151,7 +159,7 @@ export const loader: LoaderFunction = async (content: any) => {
 };
 ```
 
-```ts:posts.ts
+```ts file="posts.ts"
 export async function getPostsByCategory(category: string) {
   const posts = await getAllPosts();
   return posts.filter((post) => post.metaData.category === category);
@@ -183,3 +191,4 @@ Remixを用いて、ブログを構築していきました。
 自身のブログを開設したので、これからどんどん更新していきたいと思います。  
 また、機能をどんどん追加していきたいと考えていますので、気軽にissueやPRを投げてもらえると嬉しいです。  
 特に、今回は実装していないページネーションなども実装していく予定です。  
+</BlogLayout>

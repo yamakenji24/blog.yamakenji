@@ -14,7 +14,7 @@ import {
 import type { LinksFunction, LoaderFunction } from 'remix';
 import { usePageTitle } from './hooks';
 import { Header, Footer, SideBar } from './components/common';
-import { getAllTags, getAllCategories } from '~/lib/posts';
+import { getAllTags, getAllCategories } from './lib/blogs';
 
 import styles from './styles/app.css';
 
