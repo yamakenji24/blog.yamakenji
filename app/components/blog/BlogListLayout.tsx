@@ -13,7 +13,7 @@ function BlogListLayout({ blogs }: Props) {
         <div key={blog.title} className="border m-1 p-2 rounded">
           <LinkLayout to={'/blog/' + blog.slug} prefetch="intent">
             <h2 className="font-bold">{blog.title}</h2>
-            <DateLayout date={blog.createdAt} />
+            <DateLayout createdAt={blog.createdAt} updatedAt={blog.updatedAt} />
             <p className="text-sm">{blog.description}</p>
           </LinkLayout>
           <ClassifyLayout category={blog.category} tags={blog.tags} />

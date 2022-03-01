@@ -14,7 +14,9 @@ export type Blog = {
 
 function postFromModule(mod: any): Blog {
   const slug: string = mod.filename.replace(/\.mdx$/, '');
-  const updatedAt: string = !mod.attributes.updatedAt && mod.attributes.createdAt;
+  const updatedAt: string = !mod.attributes.updatedAt
+    ? mod.attributes.createdAt
+    : mod.attributes.updatedAt;
   const tags: string[] = !mod.attributes.tags ? [] : Array.from(new Set(mod.attributes.tags));
 
   return {
