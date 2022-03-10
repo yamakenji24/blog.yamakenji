@@ -1,0 +1,96 @@
+---
+title: "RedisとOpenRestyで動的リバプロ"
+createdAt: "2022/03/11"
+description: "RedisとOpenRestyで動的リバプロの動作検証を行なったので、そのメモ"
+category: "Programming"
+tags:
+  - Redis
+  - OpenResty
+  - Docker
+meta:
+  title: "RedisとOpenRestyで動的リバプロ | yamakenji blog"
+  description: "RedisとOpenRestyで動的リバプロの動作検証を行なったので、そのメモ"
+  og:description: "RedisとOpenRestyで動的リバプロの動作検証を行なったので、そのメモ"
+  og:image: "https://og-image-yamakenji.vercel.app/RedisとOpenRestyで動的リバプロ.png"
+  twitter:image: "https://og-image-yamakenji.vercel.app/RedisとOpenRestyで動的リバプロ.png"
+---
+import { BlogLayout } from '../../components/blog/BlogLayout';
+
+<BlogLayout {...attributes}>
+## 概要
+複数のWebサーバに対して、動的にポートを割り当てて、動作検証を行なった際のメモです。  
+OpenResty + Redisを利用し、pathをキーにRedisがポート番号を取得します。
+
+## 構成
+- Ubuntu20.04LTS
+- Nginx(Openresty)
+- Redis
+
+## 事前設定
+### OpenRestyの設定
+OpenRestyを設定していきます。
+今回は真っ新なUbuntuに入れていくので、nginx等の事前設定は必要ありませんが、既存のnginxが動いている場合は止めておいた方が良さそうです。
+手順は[OpenResty 公式Docs](https://openresty.org/en/linux-packages.html#ubuntu)の通りです。
+最初に読み込まれるファイルは、`/usr/local/openresty/nginx/conf/nginx.conf` です。
+
+### Redisの設定
+RedisはDockerを用いて起動して、事前にpathとportを対応させるためのですとようデータを設定していきます。
+今回は、redis-cliでデータを登録しています。
+
+```yaml file="docker-compose.yml"
+version: "3"
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "16379:6379"
+    volumes:
+      - ./redis-data:/data
+    restart: always
+```
+
+```sql 
+# redis-cli
+127.0.0.1:16379> set tester1 40001
+OK
+127.0.0.1:16379> get tester1
+"40001"
+```
+## OpenRestyの設定ファイル
+location内で正規表現を用いて、英数字を含むpathをマッチさせて変数として取得します。  
+`~^/hogehoge/(?<name>[a-z]+[0-9]+)/?$`で/hogehoge/以下のマッチする英数字を後続の処理で利用していきます。
+
+Nginx内で設定した変数は、luaから参照、代入が可能である。
+例えば、`ngx.var.変数`で参照できる。
+
+```json file="test.conf"
+location ~^/hogehoge/(?<name>[a-z]+[0-9]+)/?$ {
+  set $localport "";
+  rewrite_by_lua '                                                                                                                                                                                                                                                    
+    local redis = require "resty.redis"                                                                                                                                                                                                                             
+    local redisObj = redis:new()                                                                                                                                                                                                                                    
+    local ok, err = redisObj:connect("127.0.0.1", 16379)                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                
+    if not ok then                                                                                                                                                                                                                                                  
+      ngx.log(ngx.ERR, "failed connecting redis", err)                                                                                                                                                                                                                     
+      return ngx.exit(500)                                                                                                                                                                                                                                                    
+    end                                                                                                                                                                                                                                                             
+                                                                                                                                                                                                                                                                                
+    local res, err = redisObj:get(ngx.var.name)                                                                                                                                                                                                                     
+    if not res then                                                                                                                                                                                                                                                 
+      ngx.log(ngx.Err, "Failed getting data", err)                                                                                                                                                                                                                         
+      return ngx.exit(404)                                                                                                                                                                                                                                   
+    else                                                                                                                                                                                                                                                            
+      ngx.var.localport = res                                                                                                                                                                                                                                     
+    end                                                                                                                                                                                                                                                             
+  ';
+  proxy_http_version 1.1;
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header Host $host;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection $connection_upgrade;
+  proxy_set_header Accept-Encoding gzip;
+  proxy_pass http://127.0.0.1:$localport/;
+}
+```
+</BlogLayout>
