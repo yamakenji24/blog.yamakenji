@@ -1,6 +1,7 @@
 import * as firstPost from '../routes/blog/first-post.mdx';
+import * as reverseProxy from '../routes/blog/reverse-proxy.mdx';
 
-const blogs = [firstPost];
+const blogs = [firstPost, reverseProxy];
 
 export type Blog = {
   slug: string;
@@ -39,7 +40,8 @@ export function getBlogBySlug(slug: string): Blog {
 }
 
 export function getAllBlogs(): Blog[] {
-  return blogs.map(postFromModule);
+  const _blogs = blogs.map(postFromModule);
+  return _blogs.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 }
 
 export function getAllTags(): string[] {
