@@ -24,10 +24,10 @@ export const loader: LoaderFunction = async ({ request }) => {
             `
           <item>
             <title>${blog.title}</title>
-            <link>${domain}/${blog.slug}</link>
+            <link>${domain}/blog/${blog.slug}</link>
             <description>${blog.description}</description>
             <pubDate>${blog.createdAt}</pubDate>
-            <guid>${domain}/${blog.slug}</guid>
+            <guid>${domain}/blog/${blog.slug}</guid>
             <content>${blog.description}</content>
           </item>
         `.trim(),
