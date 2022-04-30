@@ -6,7 +6,6 @@
   "scripts": {
     "build": "run-s build:css build:app",
     "build:app": "cross-env NODE_ENV=production remix build",
-    "build:feed": "esbuild ./app/lib/feed.ts --bundle --format=esm --define:process.env.NODE_ENV='\"development\"' --watch --platform=node",
     "build:sitemap": "esbuild ./app/lib/sitemap.ts --bundle --format=esm --define:process.env.NODE_ENV='\"development\"' --watch --platform=node",
     "dev": "cross-env NODE_ENV=development remix dev",
     "postinstall": "remix setup node",
@@ -23,12 +22,10 @@
   "dependencies": {
     "@emotion/react": "^11.6.0",
     "@emotion/styled": "^11.6.0",
-    "@mdx-js/esbuild": "^2.1.0",
     "@remix-run/react": "^1.2.3",
     "@remix-run/vercel": "^1.2.3",
     "@tailwindcss/typography": "^0.4.1",
     "esbuild": "^0.14.27",
-    "feed": "^4.2.2",
     "framer-motion": "^4.1.17",
     "gray-matter": "^4.0.3",
     "react": "^17.0.2",
