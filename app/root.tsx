@@ -15,21 +15,26 @@ import type { LinksFunction, LoaderFunction } from 'remix';
 import { usePageTitle } from './hooks';
 import { Header, Footer, SideBar } from './components/common';
 import { getAllTags, getAllCategories } from './lib/blogs';
+import { i18n } from './i18n.server';
+import { useChangeLanguage } from 'remix-i18next';
+import { useTranslation } from 'react-i18next';
 
 import styles from './styles/app.css';
 
 type LoaderData = {
   tags: string[];
   categories: string[];
+  locale: string;
 };
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }];
 };
 
-export const loader: LoaderFunction = async () => {
-  const [tags, categories] = await Promise.all([getAllTags(), getAllCategories()]);
-  const data: LoaderData = { tags, categories };
+export const loader: LoaderFunction = async ({ request }) => {
+  const locale = await i18n.getLocale(request);
+  const [tags, categories] = await Promise.all([getAllTags(locale), getAllCategories()]);
+  const data: LoaderData = { tags, categories, locale };
 
   return json(data, {
     headers: {
@@ -39,10 +44,10 @@ export const loader: LoaderFunction = async () => {
 };
 
 export default function App() {
-  const { tags, categories } = useLoaderData<LoaderData>();
+  const { tags, categories, locale } = useLoaderData<LoaderData>();
 
   return (
-    <Document>
+    <Document locale={locale}>
       <Layout tags={tags} categories={categories}>
         <Outlet />
       </Layout>
@@ -50,11 +55,21 @@ export default function App() {
   );
 }
 
-function Document({ children, title }: { children: React.ReactNode; title?: string }) {
+function Document({
+  children,
+  title,
+  locale,
+}: {
+  children: React.ReactNode;
+  title?: string;
+  locale: string;
+}) {
   const pageTitle = usePageTitle(title);
+  const { i18n } = useTranslation();
+  useChangeLanguage(locale);
 
   return (
-    <html lang="en">
+    <html lang={locale} dir={i18n.dir()}>
       <head>
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-92H3NH80F7" />
         <script
@@ -90,9 +105,9 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
 }
 type Props = {
   children: React.PropsWithChildren<Record<any, any>>;
-} & LoaderData;
+} & Omit<LoaderData, 'locale'>;
 
-function Layout({ children, tags, categories }: Props) {
+function Layout({ tags, categories, children }: Props) {
   return (
     <div>
       <Header />
@@ -122,7 +137,7 @@ export function CatchBoundary() {
   }
 
   return (
-    <Document title={`${caught.status} ${caught.statusText}`}>
+    <Document title={`${caught.status} ${caught.statusText}`} locale="en">
       <Layout tags={[]} categories={[]}>
         <h1>
           {caught.status}: {caught.statusText}
@@ -136,7 +151,7 @@ export function CatchBoundary() {
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
   return (
-    <Document title="Error!">
+    <Document title="Error!" locale="en">
       <Layout tags={[]} categories={[]}>
         <div>
           <h1>There was an error</h1>

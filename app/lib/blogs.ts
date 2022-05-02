@@ -1,7 +1,10 @@
+// ja
 import * as firstPost from '../routes/blog/first-post.mdx';
 import * as reverseProxy from '../routes/blog/reverse-proxy.mdx';
-
+// en
+import * as sample from '../routes/en/blog/sample.mdx';
 const blogs = [firstPost, reverseProxy];
+const enblogs = [sample];
 
 export type Blog = {
   slug: string;
@@ -44,14 +47,19 @@ export function getAllBlogs(): Blog[] {
   return _blogs.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 }
 
-export function getAllTags(): string[] {
-  const blogs = getAllBlogs();
+export function getAllENBlogs(): Blog[] {
+  const _enblogs = enblogs.map(postFromModule);
+  return _enblogs.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
+}
+
+export function getAllTags(locale?: string): string[] {
+  const blogs = locale === 'en' ? getAllENBlogs() : getAllBlogs();
   const tags = blogs.map((blog) => blog.tags).flat();
   return Array.from(new Set(tags));
 }
 
-export function getAllCategories(): string[] {
-  const blogs = getAllBlogs();
+export function getAllCategories(locale?: string): string[] {
+  const blogs = locale === 'en' ? getAllENBlogs() : getAllBlogs();
   const categories = blogs.map((blog) => blog.category);
   return Array.from(new Set(categories));
 }

@@ -28,7 +28,7 @@ export default async function handleRequest(
       ns,
       lng,
       backend: {
-        loadPath: resolve(__dirname, '../locales/{{lng}}/{{ns}}.json'),
+        loadPath: resolve(`./public/locales/${lng}/${ns}.json`),
       },
     });
 

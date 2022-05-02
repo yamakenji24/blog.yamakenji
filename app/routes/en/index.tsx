@@ -1,22 +1,19 @@
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { useLoaderData, json } from 'remix';
+import { useChangeLanguage } from 'remix-i18next';
 import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
-import { getAllBlogs, Blog } from '~/lib/blogs';
+import { getAllENBlogs, Blog } from '~/lib/blogs';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
 import { useTranslation } from 'react-i18next';
 
 type LoaderData = {
-  blogs: Blog[];
-};
-
-export const handle = {
-  i18n: ['index'],
+  enblogs: Blog[];
 };
 
 export const loader: LoaderFunction = async () => {
-  const blogs = await getAllBlogs();
-  const data: LoaderData = { blogs };
+  const enblogs = await getAllENBlogs();
+  const data: LoaderData = { enblogs };
 
   return json(data, {
     headers: {
@@ -25,7 +22,6 @@ export const loader: LoaderFunction = async () => {
   });
 };
 
-// https://remix.run/api/conventions#meta
 export const meta: MetaFunction = () => {
   const description = usePageDescription();
   const title = usePageTitle();
@@ -41,16 +37,16 @@ export const meta: MetaFunction = () => {
   };
 };
 
-// https://remix.run/guides/routing#index-routes
 export default function Index() {
-  const { blogs } = useLoaderData<LoaderData>();
+  useChangeLanguage('en');
+  const { enblogs } = useLoaderData<LoaderData>();
   const { t, ready } = useTranslation();
   if (!ready) return null;
 
   return (
     <div className="flex-col">
       <BreadCrumb linkTitle={t('linkTitle')} />
-      <BlogListLayout blogs={blogs} link={t('link')} />
+      <BlogListLayout blogs={enblogs} link={t('link')} />
     </div>
   );
 }
