@@ -41,8 +41,8 @@ export default function TagPost() {
 
   return (
     <div className="flex-col">
-      <BreadCrumb to={'/tag/' + tag} name={tag} />
-      <BlogListLayout blogs={blogs} />
+      <BreadCrumb to={'/tag/' + tag} name={tag} linkTitle="記事一覧" />
+      <BlogListLayout blogs={blogs} link="/blog/" />
     </div>
   );
 }

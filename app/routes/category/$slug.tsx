@@ -42,8 +42,8 @@ export default function Category() {
 
   return (
     <div className="flex-col">
-      <BreadCrumb to={'/category/' + category} name={category} />
-      <BlogListLayout blogs={blogs} />
+      <BreadCrumb to={'/category/' + category} name={category} linkTitle="記事一覧" />
+      <BlogListLayout blogs={blogs} link="/blog/" />
     </div>
   );
 }
