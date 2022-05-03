@@ -23,12 +23,12 @@ export default async function handleRequest(
     .init({
       supportedLngs: ['ja', 'en'],
       defaultNS: 'common',
-      fallbackLng: 'ja',
+      fallbackLng: 'en',
       react: { useSuspense: false },
-      ns,
       lng,
+      ns,
       backend: {
-        loadPath: resolve(`./public/locales/${lng}/${ns}.json`),
+        loadPath: resolve('./public/locales/{{lng}}/{{ns}}.json'),
       },
     });
 

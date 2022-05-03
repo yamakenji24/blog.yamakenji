@@ -15,7 +15,7 @@ if (!i18next.isInitialized)
       // This is normal i18next config, except a few things
       supportedLngs: ['ja', 'en'],
       defaultNS: 'common',
-      fallbackLng: 'ja',
+      fallbackLng: 'en',
       // Disabling suspense is recommended
       react: { useSuspense: false },
       // This function detects the namespaces your routes rendered while SSR use

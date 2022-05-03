@@ -8,13 +8,12 @@ export const i18n = new RemixI18Next({
     supportedLanguages: ['ja', 'en'],
     // This is the language you want to use in case the user language is not
     // listed above
-    fallbackLanguage: 'ja',
+    fallbackLanguage: 'en',
   },
   // This is the configuration for i18next used when translating messages server
   // side only
   i18next: {
-    // backend: { loadPath: resolve('../public/locales/{{lng}}/{{ns}}.json') },
-    backend: { loadPath: resolve('./public/locales/ja/index.json') },
+    backend: { loadPath: resolve('./public/locales/{{lng}}/{{ns}}.json') },
   },
   // The backend you want to use to load the translations
   // Tip: You could pass `resources` to the `i18next` configuration and avoid
