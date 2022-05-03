@@ -6,14 +6,22 @@ import { getAllENBlogs, Blog } from '~/lib/blogs';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
 import { useTranslation } from 'react-i18next';
+import { i18n } from '~/i18n.server';
+import { useEffect } from 'react';
 
 type LoaderData = {
   enblogs: Blog[];
+  linkTitle: string;
+  link: string;
 };
 
 export const loader: LoaderFunction = async () => {
   const enblogs = await getAllENBlogs();
-  const data: LoaderData = { enblogs };
+  const t = await i18n.getFixedT('en', 'index');
+
+  const linkTitle = t('linkTitle');
+  const link = t('link');
+  const data: LoaderData = { enblogs, linkTitle, link };
 
   return json(data, {
     headers: {
@@ -38,15 +46,20 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  useChangeLanguage('en');
-  const { enblogs } = useLoaderData<LoaderData>();
-  const { t, ready } = useTranslation();
-  if (!ready) return null;
+  const { enblogs, linkTitle, link } = useLoaderData<LoaderData>();
+  const { i18n } = useTranslation('index');
+  const locale = i18n.language;
+
+  // Fix: want lang to be changed before rendering
+  //useChangeLanguage('en')
+  useEffect(() => {
+    i18n.changeLanguage('en');
+  }, [locale]);
 
   return (
     <div className="flex-col">
-      <BreadCrumb linkTitle={t('linkTitle')} />
-      <BlogListLayout blogs={enblogs} link={t('link')} />
+      <BreadCrumb linkTitle={linkTitle} />
+      <BlogListLayout blogs={enblogs} link={link} />
     </div>
   );
 }

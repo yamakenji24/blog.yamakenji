@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { useLoaderData, json } from 'remix';
 import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
@@ -44,8 +45,14 @@ export const meta: MetaFunction = () => {
 // https://remix.run/guides/routing#index-routes
 export default function Index() {
   const { blogs } = useLoaderData<LoaderData>();
-  const { t, ready } = useTranslation();
-  if (!ready) return null;
+  const { t, i18n } = useTranslation('index');
+  const locale = i18n.language;
+
+  // Fix: want lang to be changed before rendering
+  //useChangeLanguage('ja')
+  useEffect(() => {
+    i18n.changeLanguage('ja');
+  }, [locale]);
 
   return (
     <div className="flex-col">

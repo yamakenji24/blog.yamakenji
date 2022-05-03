@@ -8,14 +8,11 @@ import {
   ScrollRestoration,
   useCatch,
   useLocation,
-  useLoaderData,
-  json,
 } from 'remix';
-import type { LinksFunction, LoaderFunction } from 'remix';
+import type { LinksFunction } from 'remix';
 import { usePageTitle } from './hooks';
 import { Header, Footer, SideBar } from './components/common';
 import { getAllTags, getAllCategories } from './lib/blogs';
-import { i18n } from './i18n.server';
 import { useChangeLanguage } from 'remix-i18next';
 import { useTranslation } from 'react-i18next';
 
@@ -31,24 +28,21 @@ export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
-  const locale = await i18n.getLocale(request);
-  const [tags, categories] = await Promise.all([getAllTags(locale), getAllCategories()]);
-  const data: LoaderData = { tags, categories, locale };
-
-  return json(data, {
-    headers: {
-      'Cache-Control': `public, max-age=${60 * 10} s-maxage=${60 * 60}`,
-    },
-  });
-};
-
 export default function App() {
-  const { tags, categories, locale } = useLoaderData<LoaderData>();
+  const { i18n } = useTranslation('index');
+  const locale = i18n.language;
+  const [newTags, setNewTags] = React.useState(getAllTags(locale));
+  const [newCategories, setNewCategories] = React.useState(getAllCategories(locale));
+  useChangeLanguage(locale);
+
+  React.useEffect(() => {
+    setNewTags(getAllTags(locale));
+    setNewCategories(getAllCategories(locale));
+  }, [locale]);
 
   return (
     <Document locale={locale}>
-      <Layout tags={tags} categories={categories}>
+      <Layout tags={newTags} categories={newCategories}>
         <Outlet />
       </Layout>
     </Document>
@@ -65,11 +59,9 @@ function Document({
   locale: string;
 }) {
   const pageTitle = usePageTitle(title);
-  const { i18n } = useTranslation();
-  useChangeLanguage(locale);
 
   return (
-    <html lang={locale} dir={i18n.dir()}>
+    <html lang={locale}>
       <head>
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-92H3NH80F7" />
         <script
