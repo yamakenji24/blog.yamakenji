@@ -1,22 +1,24 @@
-import type { MetaFunction, LoaderFunction } from 'remix';
 import { useLoaderData, json } from 'remix';
+import type { MetaFunction, LoaderFunction } from 'remix';
+import { getENBlogsByTag, Blog } from '~/lib/blogs';
 import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
-import { getAllENBlogs, Blog } from '~/lib/blogs';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
 import { i18n } from '~/i18n.server';
 
 type LoaderData = {
   enblogs: Blog[];
+  tag: string;
   linkTitle: string;
 };
 
-export const loader: LoaderFunction = async () => {
-  const enblogs = await getAllENBlogs();
+export const loader: LoaderFunction = async (content: any) => {
+  const tag = content.params.slug;
+  const enblogs = await getENBlogsByTag(tag);
   const t = await i18n.getFixedT('en', 'index');
 
   const linkTitle = t('linkTitle');
-  const data: LoaderData = { enblogs, linkTitle };
+  const data: LoaderData = { enblogs, tag, linkTitle };
 
   return json(data, {
     headers: {
@@ -34,18 +36,17 @@ export const meta: MetaFunction = () => {
     title: title,
     description: description,
     'og:description': description,
-    'og:title': title,
     'og:image': ogImage,
     'twitter:image': ogImage,
   };
 };
 
-export default function Index() {
-  const { enblogs, linkTitle } = useLoaderData<LoaderData>();
+export default function ENTagBlog() {
+  const { enblogs, tag, linkTitle } = useLoaderData<LoaderData>();
 
   return (
     <div className="flex-col">
-      <BreadCrumb linkTitle={linkTitle} locale="/en/" />
+      <BreadCrumb to={'tag/' + tag} name={tag} linkTitle={linkTitle} locale="/en/" />
       <BlogListLayout blogs={enblogs} link="/en/blog/" />
     </div>
   );
