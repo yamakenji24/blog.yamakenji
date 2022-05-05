@@ -71,3 +71,11 @@ export function getBlogsByCategory(category: string): Blog[] {
 export function getBlogsByTag(tag: string): Blog[] {
   return getAllBlogs().filter((blog) => blog.tags.includes(tag));
 }
+
+export function getENBlogsByCategory(category: string): Blog[] {
+  return getAllENBlogs().filter((blog) => blog.category === category);
+}
+
+export function getENBlogsByTag(tag: string): Blog[] {
+  return getAllENBlogs().filter((blog) => blog.tags.includes(tag));
+}

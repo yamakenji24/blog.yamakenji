@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { useLoaderData, json } from 'remix';
 import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
@@ -6,9 +5,11 @@ import { getAllBlogs, Blog } from '~/lib/blogs';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
 import { useTranslation } from 'react-i18next';
+import { i18n } from '~/i18n.server';
 
 type LoaderData = {
   blogs: Blog[];
+  linkTitle: string;
 };
 
 export const handle = {
@@ -17,7 +18,9 @@ export const handle = {
 
 export const loader: LoaderFunction = async () => {
   const blogs = await getAllBlogs();
-  const data: LoaderData = { blogs };
+  const t = await i18n.getFixedT('ja', 'index');
+  const linkTitle = t('linkTitle');
+  const data: LoaderData = { blogs, linkTitle };
 
   return json(data, {
     headers: {
@@ -44,20 +47,12 @@ export const meta: MetaFunction = () => {
 
 // https://remix.run/guides/routing#index-routes
 export default function Index() {
-  const { blogs } = useLoaderData<LoaderData>();
-  const { t, i18n } = useTranslation('index');
-  const locale = i18n.language;
-
-  // Fix: want lang to be changed before rendering
-  //useChangeLanguage('ja')
-  useEffect(() => {
-    i18n.changeLanguage('ja');
-  }, [locale]);
+  const { blogs, linkTitle } = useLoaderData<LoaderData>();
 
   return (
     <div className="flex-col">
-      <BreadCrumb linkTitle={t('linkTitle')} />
-      <BlogListLayout blogs={blogs} link={t('link')} />
+      <BreadCrumb linkTitle={linkTitle} locale="/" />
+      <BlogListLayout blogs={blogs} link="/blog/" />
     </div>
   );
 }

@@ -1,12 +1,15 @@
 import * as React from 'react';
 import {
+  json,
   Links,
   LiveReload,
+  LoaderFunction,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useCatch,
+  useLoaderData,
   useLocation,
 } from 'remix';
 import type { LinksFunction } from 'remix';
@@ -28,21 +31,40 @@ export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }];
 };
 
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const locale = url.pathname.split('/')[1] === 'en' ? 'en' : 'ja';
+  const tags = await getAllTags(locale);
+  const categories = await getAllCategories(locale);
+  const data = { tags, categories, locale };
+
+  return json(data, {
+    headers: {
+      'Cache-Control': 'public, max-age=60 s-maxage=60',
+    },
+  });
+};
+
 export default function App() {
+  const { tags, categories, locale } = useLoaderData<LoaderData>();
   const { i18n } = useTranslation('index');
-  const locale = i18n.language;
-  const [newTags, setNewTags] = React.useState(getAllTags(locale));
-  const [newCategories, setNewCategories] = React.useState(getAllCategories(locale));
-  useChangeLanguage(locale);
+  const [newLocale, setNewLocale] = React.useState(locale);
+  const [link, setLink] = React.useState<string>(newLocale === 'en' ? '/en/' : '/');
+  const [newTags, setNewTags] = React.useState(tags);
+  const [newCategories, setNewCategories] = React.useState(categories);
+  useChangeLanguage(newLocale);
 
   React.useEffect(() => {
-    setNewTags(getAllTags(locale));
-    setNewCategories(getAllCategories(locale));
-  }, [locale]);
+    setNewTags(getAllTags(i18n.language));
+    setNewCategories(getAllCategories(i18n.language));
+    i18n.changeLanguage(i18n.language);
+    setNewLocale(i18n.language);
+    setLink(i18n.language === 'en' ? '/en/' : '/');
+  }, [i18n.language, newLocale]);
 
   return (
-    <Document locale={locale}>
-      <Layout tags={newTags} categories={newCategories}>
+    <Document locale={newLocale}>
+      <Layout tags={newTags} categories={newCategories} link={link}>
         <Outlet />
       </Layout>
     </Document>
@@ -97,15 +119,16 @@ function Document({
 }
 type Props = {
   children: React.PropsWithChildren<Record<any, any>>;
+  link: string;
 } & Omit<LoaderData, 'locale'>;
 
-function Layout({ tags, categories, children }: Props) {
+function Layout({ tags, categories, children, link }: Props) {
   return (
     <div>
       <Header />
       <div className="min-h-screen m-4 flex flex-col md:flex-row">
         <div className="w-full md:w-5/6">{children}</div>
-        <SideBar tags={tags} categories={categories} />
+        <SideBar tags={tags} categories={categories} link={link} />
       </div>
       <Footer />
     </div>
@@ -130,7 +153,7 @@ export function CatchBoundary() {
 
   return (
     <Document title={`${caught.status} ${caught.statusText}`} locale="en">
-      <Layout tags={[]} categories={[]}>
+      <Layout tags={[]} categories={[]} link="">
         <h1>
           {caught.status}: {caught.statusText}
         </h1>
@@ -144,7 +167,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
   return (
     <Document title="Error!" locale="en">
-      <Layout tags={[]} categories={[]}>
+      <Layout tags={[]} categories={[]} link="">
         <div>
           <h1>There was an error</h1>
           <p>{error.message}</p>

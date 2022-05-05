@@ -4,16 +4,20 @@ import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
 import { getBlogsByCategory, Blog } from '~/lib/blogs';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
+import { i18n } from '~/i18n.server';
 
 type LoaderData = {
   blogs: Blog[];
   category: string;
+  linkTitle: string;
 };
 
 export const loader: LoaderFunction = async (content: any) => {
   const category = content.params.slug;
   const blogs = await getBlogsByCategory(category);
-  const data: LoaderData = { blogs, category };
+  const t = await i18n.getFixedT('ja', 'index');
+  const linkTitle = t('linkTitle');
+  const data: LoaderData = { blogs, category, linkTitle };
 
   return json(data, {
     headers: {
@@ -38,11 +42,11 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Category() {
-  const { blogs, category } = useLoaderData<LoaderData>();
+  const { blogs, category, linkTitle } = useLoaderData<LoaderData>();
 
   return (
     <div className="flex-col">
-      <BreadCrumb to={'/category/' + category} name={category} linkTitle="記事一覧" />
+      <BreadCrumb to={'category/' + category} name={category} linkTitle={linkTitle} locale="/" />
       <BlogListLayout blogs={blogs} link="/blog/" />
     </div>
   );
