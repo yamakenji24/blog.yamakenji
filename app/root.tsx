@@ -1,60 +1,81 @@
 import * as React from 'react';
 import {
+  json,
   Links,
   LiveReload,
+  LoaderFunction,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
   useCatch,
-  useLocation,
   useLoaderData,
-  json,
+  useLocation,
 } from 'remix';
-import type { LinksFunction, LoaderFunction } from 'remix';
-import { usePageTitle } from './hooks';
+import type { LinksFunction } from 'remix';
+import { usePageTitle, getLocaleFromURL, useGetLocale } from './hooks';
 import { Header, Footer, SideBar } from './components/common';
 import { getAllTags, getAllCategories } from './lib/blogs';
-
+import { i18nData } from '~/lib/i18n';
 import styles from './styles/app.css';
 
 type LoaderData = {
   tags: string[];
   categories: string[];
+  _locale: 'en' | 'ja';
 };
 
 export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }];
 };
 
-export const loader: LoaderFunction = async () => {
-  const [tags, categories] = await Promise.all([getAllTags(), getAllCategories()]);
-  const data: LoaderData = { tags, categories };
+export const loader: LoaderFunction = async ({ request }) => {
+  const _locale = getLocaleFromURL(request.url);
+  const tags = await getAllTags(_locale);
+  const categories = await getAllCategories(_locale);
+  const data = { tags, categories, _locale };
 
   return json(data, {
     headers: {
-      'Cache-Control': `public, max-age=${60 * 10} s-maxage=${60 * 60}`,
+      'Cache-Control': 'public, max-age=60 s-maxage=60',
     },
   });
 };
 
 export default function App() {
-  const { tags, categories } = useLoaderData<LoaderData>();
+  const { tags, categories, _locale } = useLoaderData<LoaderData>();
+  const [newTags, setNewTags] = React.useState(tags);
+  const [newCategories, setNewCategories] = React.useState(categories);
+  const locale = useGetLocale();
+  const link = i18nData[locale].link;
+
+  React.useEffect(() => {
+    setNewTags(getAllTags(locale));
+    setNewCategories(getAllCategories(locale));
+  }, [locale]);
 
   return (
-    <Document>
-      <Layout tags={tags} categories={categories}>
+    <Document locale={locale}>
+      <Layout tags={newTags} categories={newCategories} link={link}>
         <Outlet />
       </Layout>
     </Document>
   );
 }
 
-function Document({ children, title }: { children: React.ReactNode; title?: string }) {
+function Document({
+  children,
+  title,
+  locale,
+}: {
+  children: React.ReactNode;
+  title?: string;
+  locale: string;
+}) {
   const pageTitle = usePageTitle(title);
 
   return (
-    <html lang="en">
+    <html lang={locale}>
       <head>
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-92H3NH80F7" />
         <script
@@ -90,15 +111,16 @@ function Document({ children, title }: { children: React.ReactNode; title?: stri
 }
 type Props = {
   children: React.PropsWithChildren<Record<any, any>>;
-} & LoaderData;
+  link: string;
+} & Omit<LoaderData, '_locale'>;
 
-function Layout({ children, tags, categories }: Props) {
+function Layout({ tags, categories, children, link }: Props) {
   return (
     <div>
       <Header />
       <div className="min-h-screen m-4 flex flex-col md:flex-row">
         <div className="w-full md:w-5/6">{children}</div>
-        <SideBar tags={tags} categories={categories} />
+        <SideBar tags={tags} categories={categories} link={link} />
       </div>
       <Footer />
     </div>
@@ -122,8 +144,8 @@ export function CatchBoundary() {
   }
 
   return (
-    <Document title={`${caught.status} ${caught.statusText}`}>
-      <Layout tags={[]} categories={[]}>
+    <Document title={`${caught.status} ${caught.statusText}`} locale="en">
+      <Layout tags={[]} categories={[]} link="">
         <h1>
           {caught.status}: {caught.statusText}
         </h1>
@@ -136,8 +158,8 @@ export function CatchBoundary() {
 export function ErrorBoundary({ error }: { error: Error }) {
   console.error(error);
   return (
-    <Document title="Error!">
-      <Layout tags={[]} categories={[]}>
+    <Document title="Error!" locale="en">
+      <Layout tags={[]} categories={[]} link="">
         <div>
           <h1>There was an error</h1>
           <p>{error.message}</p>

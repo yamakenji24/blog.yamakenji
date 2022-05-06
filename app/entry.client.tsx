@@ -1,4 +1,10 @@
+import { RemixBrowser } from '@remix-run/react';
 import { hydrate } from 'react-dom';
-import { RemixBrowser } from 'remix';
+import { RecoilRoot } from 'recoil';
 
-hydrate(<RemixBrowser />, document);
+hydrate(
+  <RecoilRoot>
+    <RemixBrowser />
+  </RecoilRoot>,
+  document,
+);

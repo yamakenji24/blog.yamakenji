@@ -1,6 +1,6 @@
 import { useLoaderData, json } from 'remix';
 import type { MetaFunction, LoaderFunction } from 'remix';
-import { getBlogsByTag, Blog } from '~/lib/blogs';
+import { getENBlogsByTag, Blog } from '~/lib/blogs';
 import {
   usePageDescription,
   usePageTitle,
@@ -12,17 +12,16 @@ import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
 
 type LoaderData = {
-  blogs: Blog[];
+  enblogs: Blog[];
   tag: string;
   locale: 'en' | 'ja';
 };
 
-export const loader: LoaderFunction = async ({ params, request }) => {
+export const loader: LoaderFunction = async ({ request, params }) => {
   const tag = params.slug ?? '';
-  const blogs = await getBlogsByTag(tag);
+  const enblogs = await getENBlogsByTag(tag);
   const locale = getLocaleFromURL(request.url);
-
-  const data: LoaderData = { blogs, tag, locale };
+  const data: LoaderData = { enblogs, tag, locale };
 
   return json(data, {
     headers: {
@@ -45,14 +44,14 @@ export const meta: MetaFunction = () => {
   };
 };
 
-export default function TagPost() {
-  const { blogs, tag, locale } = useLoaderData<LoaderData>();
+export default function ENTagBlog() {
+  const { enblogs, tag, locale } = useLoaderData<LoaderData>();
   const { linkTitle } = useLocale(locale);
 
   return (
     <div className="flex-col">
-      <BreadCrumb to={'tag/' + tag} name={tag} linkTitle={linkTitle} locale="/" />
-      <BlogListLayout blogs={blogs} link="/blog/" />
+      <BreadCrumb to={'tag/' + tag} name={tag} linkTitle={linkTitle} locale="/en/" />
+      <BlogListLayout blogs={enblogs} link="/en/blog/" />
     </div>
   );
 }

@@ -1,17 +1,25 @@
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { useLoaderData, json } from 'remix';
-import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
+import {
+  usePageDescription,
+  usePageTitle,
+  useOGImageUrl,
+  getLocaleFromURL,
+  useLocale,
+} from '~/hooks';
 import { getAllBlogs, Blog } from '~/lib/blogs';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
 
 type LoaderData = {
   blogs: Blog[];
+  locale: 'en' | 'ja';
 };
 
-export const loader: LoaderFunction = async () => {
+export const loader: LoaderFunction = async ({ request }) => {
+  const locale = getLocaleFromURL(request.url);
   const blogs = await getAllBlogs();
-  const data: LoaderData = { blogs };
+  const data: LoaderData = { blogs, locale };
 
   return json(data, {
     headers: {
@@ -38,12 +46,13 @@ export const meta: MetaFunction = () => {
 
 // https://remix.run/guides/routing#index-routes
 export default function Index() {
-  const { blogs } = useLoaderData<LoaderData>();
+  const { blogs, locale } = useLoaderData<LoaderData>();
+  const { linkTitle } = useLocale(locale);
 
   return (
     <div className="flex-col">
-      <BreadCrumb />
-      <BlogListLayout blogs={blogs} />
+      <BreadCrumb linkTitle={linkTitle} locale="/" />
+      <BlogListLayout blogs={blogs} link="/blog/" />
     </div>
   );
 }
