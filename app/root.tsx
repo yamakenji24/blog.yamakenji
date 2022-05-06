@@ -16,7 +16,7 @@ import type { LinksFunction } from 'remix';
 import { usePageTitle, getLocaleFromURL, useGetLocale } from './hooks';
 import { Header, Footer, SideBar } from './components/common';
 import { getAllTags, getAllCategories } from './lib/blogs';
-import i18nData from '~/lib/i18n.json';
+import { i18nData } from '~/lib/i18n';
 import styles from './styles/app.css';
 
 type LoaderData = {

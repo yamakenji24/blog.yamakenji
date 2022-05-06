@@ -1,6 +1,6 @@
 import { atom, selector, useRecoilCallback, useRecoilValue } from 'recoil';
 import { useEffect } from 'react';
-import i18nData from '~/lib/i18n.json';
+import { i18nData } from '../lib/i18n';
 
 export type Locale = 'en' | 'ja';
 
