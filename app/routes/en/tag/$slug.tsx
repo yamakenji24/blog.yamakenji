@@ -1,24 +1,27 @@
 import { useLoaderData, json } from 'remix';
 import type { MetaFunction, LoaderFunction } from 'remix';
 import { getENBlogsByTag, Blog } from '~/lib/blogs';
-import { usePageDescription, usePageTitle, useOGImageUrl } from '~/hooks';
+import {
+  usePageDescription,
+  usePageTitle,
+  useOGImageUrl,
+  getLocaleFromURL,
+  useLocale,
+} from '~/hooks';
 import { BreadCrumb } from '~/components/common';
 import { BlogListLayout } from '~/components/blog/BlogListLayout';
-import { i18n } from '~/i18n.server';
 
 type LoaderData = {
   enblogs: Blog[];
   tag: string;
-  linkTitle: string;
+  locale: 'en' | 'ja';
 };
 
-export const loader: LoaderFunction = async (content: any) => {
-  const tag = content.params.slug;
+export const loader: LoaderFunction = async ({ request, params }) => {
+  const tag = params.slug ?? '';
   const enblogs = await getENBlogsByTag(tag);
-  const t = await i18n.getFixedT('en', 'index');
-
-  const linkTitle = t('linkTitle');
-  const data: LoaderData = { enblogs, tag, linkTitle };
+  const locale = getLocaleFromURL(request.url);
+  const data: LoaderData = { enblogs, tag, locale };
 
   return json(data, {
     headers: {
@@ -42,7 +45,8 @@ export const meta: MetaFunction = () => {
 };
 
 export default function ENTagBlog() {
-  const { enblogs, tag, linkTitle } = useLoaderData<LoaderData>();
+  const { enblogs, tag, locale } = useLoaderData<LoaderData>();
+  const { linkTitle } = useLocale(locale);
 
   return (
     <div className="flex-col">
