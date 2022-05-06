@@ -13,18 +13,16 @@ import {
   useLocation,
 } from 'remix';
 import type { LinksFunction } from 'remix';
-import { usePageTitle } from './hooks';
+import { usePageTitle, getLocaleFromURL, useGetLocale } from './hooks';
 import { Header, Footer, SideBar } from './components/common';
 import { getAllTags, getAllCategories } from './lib/blogs';
-import { useChangeLanguage } from 'remix-i18next';
-import { useTranslation } from 'react-i18next';
-
+import i18nData from '~/lib/i18n.json';
 import styles from './styles/app.css';
 
 type LoaderData = {
   tags: string[];
   categories: string[];
-  locale: string;
+  _locale: 'en' | 'ja';
 };
 
 export const links: LinksFunction = () => {
@@ -32,11 +30,10 @@ export const links: LinksFunction = () => {
 };
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const url = new URL(request.url);
-  const locale = url.pathname.split('/')[1] === 'en' ? 'en' : 'ja';
-  const tags = await getAllTags(locale);
-  const categories = await getAllCategories(locale);
-  const data = { tags, categories, locale };
+  const _locale = getLocaleFromURL(request.url);
+  const tags = await getAllTags(_locale);
+  const categories = await getAllCategories(_locale);
+  const data = { tags, categories, _locale };
 
   return json(data, {
     headers: {
@@ -46,24 +43,19 @@ export const loader: LoaderFunction = async ({ request }) => {
 };
 
 export default function App() {
-  const { tags, categories, locale } = useLoaderData<LoaderData>();
-  const { i18n } = useTranslation('index');
-  const [newLocale, setNewLocale] = React.useState(locale);
-  const [link, setLink] = React.useState<string>(newLocale === 'en' ? '/en/' : '/');
+  const { tags, categories, _locale } = useLoaderData<LoaderData>();
   const [newTags, setNewTags] = React.useState(tags);
   const [newCategories, setNewCategories] = React.useState(categories);
-  useChangeLanguage(newLocale);
+  const locale = useGetLocale();
+  const link = i18nData[locale].link;
 
   React.useEffect(() => {
-    setNewTags(getAllTags(i18n.language));
-    setNewCategories(getAllCategories(i18n.language));
-    i18n.changeLanguage(i18n.language);
-    setNewLocale(i18n.language);
-    setLink(i18n.language === 'en' ? '/en/' : '/');
-  }, [i18n.language, newLocale]);
+    setNewTags(getAllTags(locale));
+    setNewCategories(getAllCategories(locale));
+  }, [locale]);
 
   return (
-    <Document locale={newLocale}>
+    <Document locale={locale}>
       <Layout tags={newTags} categories={newCategories} link={link}>
         <Outlet />
       </Layout>
@@ -120,7 +112,7 @@ function Document({
 type Props = {
   children: React.PropsWithChildren<Record<any, any>>;
   link: string;
-} & Omit<LoaderData, 'locale'>;
+} & Omit<LoaderData, '_locale'>;
 
 function Layout({ tags, categories, children, link }: Props) {
   return (
