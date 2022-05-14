@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tag, LinkLayout } from '~/components/common';
+import { Tag, LinkLayout } from '../common';
 
 type Props = {
   categories: string[];

@@ -14,7 +14,9 @@ import {
 } from 'remix';
 import type { LinksFunction } from 'remix';
 import { usePageTitle, getLocaleFromURL, useGetLocale } from './hooks';
-import { Header, Footer, SideBar } from './components/common';
+import { SideBar } from './components/common';
+import { Footer } from './components/Footer';
+import { Header } from './components/Header';
 import { getAllTags, getAllCategories } from './lib/blogs';
 import { i18nData } from '~/lib/i18n';
 import styles from './styles/app.css';
