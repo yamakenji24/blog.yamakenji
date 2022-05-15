@@ -1,4 +1,4 @@
-import { LinkLayout } from '~/components/common';
+import { LinkLayout } from '../common';
 
 function Header() {
   return (
@@ -9,7 +9,7 @@ function Header() {
           <p>日本語</p>
         </LinkLayout>
         <LinkLayout to="/en" prefetch="intent">
-          <p>English</p>
+          English
         </LinkLayout>
       </div>
     </div>
