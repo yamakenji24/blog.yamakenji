@@ -1,18 +1,17 @@
 import * as React from 'react';
+import type { LinksFunction, LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
 import {
-  json,
   Links,
   LiveReload,
-  LoaderFunction,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
-  useCatch,
   useLoaderData,
   useLocation,
-} from 'remix';
-import type { LinksFunction } from 'remix';
+  useCatch,
+} from '@remix-run/react';
 import { usePageTitle, getLocaleFromURL, useGetLocale } from './hooks';
 import { SideBar } from './components/common';
 import { Footer } from './components/Footer';
