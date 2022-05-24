@@ -1,5 +1,6 @@
-import { useLoaderData, json } from 'remix';
-import type { MetaFunction, LoaderFunction } from 'remix';
+import type { MetaFunction, LoaderFunction } from '@remix-run/node';
+import { json } from '@remix-run/node';
+import { useLoaderData } from '@remix-run/react';
 import {
   usePageDescription,
   usePageTitle,

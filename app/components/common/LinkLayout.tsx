@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Link } from 'remix';
+import { Link } from '@remix-run/react';
+//import { Link } from 'remix';
 
 type Props = {
   children?: React.ReactNode;
