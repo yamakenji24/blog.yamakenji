@@ -1,3 +1,9 @@
+# yamakenji24 blog
+[![Unit Test](https://github.com/yamakenji24/blog.yamakenji/actions/workflows/jest.yml/badge.svg)](https://github.com/yamakenji24/blog.yamakenji/actions/workflows/jest.yml)
+[![Code Smells](https://sonarcloud.io/api/project_badges/measure?project=yamakenji24_blog.yamakenji&metric=code_smells)](https://sonarcloud.io/summary/new_code?id=yamakenji24_blog.yamakenji)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=yamakenji24_blog.yamakenji&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=yamakenji24_blog.yamakenji)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=yamakenji24_blog.yamakenji&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=yamakenji24_blog.yamakenji)
+
 # Welcome to Remix!
 
 - [Remix Docs](https://remix.run/docs)
