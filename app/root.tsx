@@ -32,8 +32,8 @@ export const links: LinksFunction = () => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const _locale = getLocaleFromURL(request.url);
-  const tags = await getAllTags(_locale);
-  const categories = await getAllCategories(_locale);
+  const tags = getAllTags(_locale);
+  const categories = getAllCategories(_locale);
   const data = { tags, categories, _locale };
 
   return json(data, {
