@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import '@testing-library/jest-dom';
-import { Header } from '.';
+import { Header } from '../Header';
 
 // WIP: Router周辺のテストがよくわからない
 describe('render Header', () => {
