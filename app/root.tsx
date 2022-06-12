@@ -14,8 +14,8 @@ import {
 } from '@remix-run/react';
 import { usePageTitle, getLocaleFromURL, useGetLocale } from './hooks';
 import { SideBar } from './components/common';
-import { Footer } from './components/Footer';
-import { Header } from './components/Header';
+import { Footer } from './components/common/Footer';
+import { Header } from './components/common/Header';
 import { getAllTags, getAllCategories } from './lib/blogs';
 import { i18nData } from '~/lib/i18n';
 import styles from './styles/app.css';

@@ -1,4 +1,4 @@
-import { LinkLayout } from '../common';
+import { LinkLayout } from '..';
 
 function Header() {
   return (
