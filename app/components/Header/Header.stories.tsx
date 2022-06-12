@@ -3,6 +3,7 @@ import { ComponentStory, ComponentMeta } from '@storybook/react';
 import { BrowserRouter } from 'react-router-dom';
 import { Header } from '.';
 
+// Need Fixed: Remix Root need to be set for remix-run Link
 const decorator = (Story: () => ReactElement): ReactElement => {
   return <BrowserRouter>{Story()}</BrowserRouter>;
 };
