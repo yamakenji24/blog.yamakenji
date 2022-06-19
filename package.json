@@ -19,8 +19,7 @@
     "lint:fix": "eslint 'app/**/*.{js,jsx,ts,tsx}' --fix",
     "fmt": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' && eslint 'app/**/*.{js,jsx,ts,tsx}'",
     "lint-staged": "lint-staged",
-    "storybook": "start-storybook -p 6006",
-    "chromatic": "npx chromatic --project-token=707e24cedafc"
+    "storybook": "start-storybook -p 6006"
   },
   "dependencies": {
     "@emotion/react": "^11.6.0",
