@@ -19,7 +19,8 @@
     "fmt": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' && eslint 'app/**/*.{js,jsx,ts,tsx}'",
     "lint-staged": "lint-staged",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "build-storybook": "build-storybook",
+    "chromatic": "npx chromatic --project-token=707e24cedafc"
   },
   "dependencies": {
     "@emotion/react": "^11.6.0",
@@ -64,6 +65,7 @@
     "@typescript-eslint/parser": "^5.4.0",
     "autoprefixer": "^10.4.0",
     "babel-loader": "^8.2.5",
+    "chromatic": "^6.6.3",
     "cross-env": "^7.0.3",
     "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
@@ -86,5 +88,8 @@
     "*.{js,jsx,ts,tsx}": [
       "npm run fmt"
     ]
-  }
+  },
+  "version": "",
+  "readme": "ERROR: No README data found!",
+  "_id": "remix-app-template@"
 }
