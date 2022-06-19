@@ -1,4 +1,4 @@
-import { LinkLayout } from './LinkLayout';
+import { LinkLayout } from '../LinkLayout';
 
 type Props = {
   name?: string;
