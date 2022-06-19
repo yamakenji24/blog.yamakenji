@@ -6,12 +6,13 @@
   "scripts": {
     "build": "run-s build:css build:app",
     "build:app": "cross-env NODE_ENV=production remix build",
+    "build:css": "postcss styles --base styles --dir app/styles --env production",
     "build:sitemap": "esbuild ./app/lib/sitemap.ts --bundle --format=esm --define:process.env.NODE_ENV='\"development\"' --watch --platform=node",
+    "build:storybook": "build-storybook",
     "dev": "cross-env NODE_ENV=development remix dev",
     "postinstall": "remix setup node",
     "start": "remix-serve build",
     "watch:css": "postcss styles --base styles --dir app/styles -w",
-    "build:css": "postcss styles --base styles --dir app/styles --env production",
     "test": "jest",
     "prepare": "husky install",
     "lint": "eslint 'app/**/*.{js,jsx,ts,tsx}' || exit 0",
@@ -19,7 +20,6 @@
     "fmt": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' && eslint 'app/**/*.{js,jsx,ts,tsx}'",
     "lint-staged": "lint-staged",
     "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook",
     "chromatic": "npx chromatic --project-token=707e24cedafc"
   },
   "dependencies": {
