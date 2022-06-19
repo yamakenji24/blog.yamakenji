@@ -14,8 +14,8 @@ import {
 } from '@remix-run/react';
 import { usePageTitle, getLocaleFromURL, useGetLocale } from './hooks';
 import { SideBar } from './components/common';
-import { Footer } from './components/Footer';
-import { Header } from './components/Header';
+import { Footer } from './components/common/Footer';
+import { Header } from './components/common/Header';
 import { getAllTags, getAllCategories } from './lib/blogs';
 import { i18nData } from '~/lib/i18n';
 import styles from './styles/app.css';
@@ -32,8 +32,8 @@ export const links: LinksFunction = () => {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const _locale = getLocaleFromURL(request.url);
-  const tags = await getAllTags(_locale);
-  const categories = await getAllCategories(_locale);
+  const tags = getAllTags(_locale);
+  const categories = getAllCategories(_locale);
   const data = { tags, categories, _locale };
 
   return json(data, {

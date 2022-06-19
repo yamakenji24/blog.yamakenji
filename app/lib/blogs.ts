@@ -5,7 +5,7 @@ import * as whatsScrum from '../routes/blog/whats-scrum.mdx';
 import * as tsBlueBerry from '../routes/blog/reading-blueberry.mdx';
 // en
 import * as sample from '../routes/en/blog/sample.mdx';
-const blogs = [firstPost, reverseProxy, whatsScrum, tsBlueBerry];
+const defaultBlogs = [firstPost, reverseProxy, whatsScrum, tsBlueBerry];
 const enblogs = [sample];
 
 export type Blog = {
@@ -45,7 +45,7 @@ export function getBlogBySlug(slug: string): Blog {
 }
 
 export function getAllBlogs(): Blog[] {
-  const _blogs = blogs.map(postFromModule);
+  const _blogs = defaultBlogs.map(postFromModule);
   return _blogs.sort((a, b) => (a.createdAt < b.createdAt ? 1 : -1));
 }
 

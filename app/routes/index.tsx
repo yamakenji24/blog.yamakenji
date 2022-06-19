@@ -20,7 +20,7 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ request }) => {
   const locale = getLocaleFromURL(request.url);
-  const blogs = await getAllBlogs();
+  const blogs = getAllBlogs();
   const data: LoaderData = { blogs, locale };
 
   return json(data, {

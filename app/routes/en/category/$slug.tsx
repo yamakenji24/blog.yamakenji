@@ -20,7 +20,7 @@ type LoaderData = {
 
 export const loader: LoaderFunction = async ({ params, request }) => {
   const category = params.slug ?? '';
-  const enblogs = await getENBlogsByCategory(category);
+  const enblogs = getENBlogsByCategory(category);
   const locale = getLocaleFromURL(request.url);
 
   const data: LoaderData = { enblogs, category, locale };

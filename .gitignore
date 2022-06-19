@@ -6,3 +6,4 @@ node_modules
 /api
 .vercel
 app/styles
+build-storybook.log
