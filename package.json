@@ -6,20 +6,20 @@
   "scripts": {
     "build": "run-s build:css build:app",
     "build:app": "cross-env NODE_ENV=production remix build",
+    "build:css": "postcss styles --base styles --dir app/styles --env production",
     "build:sitemap": "esbuild ./app/lib/sitemap.ts --bundle --format=esm --define:process.env.NODE_ENV='\"development\"' --watch --platform=node",
+    "build:storybook": "build-storybook",
     "dev": "cross-env NODE_ENV=development remix dev",
     "postinstall": "remix setup node",
     "start": "remix-serve build",
     "watch:css": "postcss styles --base styles --dir app/styles -w",
-    "build:css": "postcss styles --base styles --dir app/styles --env production",
     "test": "jest",
     "prepare": "husky install",
     "lint": "eslint 'app/**/*.{js,jsx,ts,tsx}' || exit 0",
     "lint:fix": "eslint 'app/**/*.{js,jsx,ts,tsx}' --fix",
     "fmt": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' && eslint 'app/**/*.{js,jsx,ts,tsx}'",
     "lint-staged": "lint-staged",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "storybook": "start-storybook -p 6006"
   },
   "dependencies": {
     "@emotion/react": "^11.6.0",
@@ -64,6 +64,7 @@
     "@typescript-eslint/parser": "^5.4.0",
     "autoprefixer": "^10.4.0",
     "babel-loader": "^8.2.5",
+    "chromatic": "^6.6.3",
     "cross-env": "^7.0.3",
     "eslint": "^8.3.0",
     "eslint-config-prettier": "^8.3.0",
@@ -86,5 +87,8 @@
     "*.{js,jsx,ts,tsx}": [
       "npm run fmt"
     ]
-  }
+  },
+  "version": "",
+  "readme": "ERROR: No README data found!",
+  "_id": "remix-app-template@"
 }
