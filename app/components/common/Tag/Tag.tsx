@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { FaTag } from 'react-icons/fa';
 
 type Props = {
