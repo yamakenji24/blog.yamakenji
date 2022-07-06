@@ -1,3 +1,4 @@
+import type { ReactElement } from 'react';
 import { Blog } from '~/lib/blogs';
 import { ClassifyLayout } from './ClassifyLayout';
 import { DateLayout, LinkLayout } from '~/components/common';
@@ -7,7 +8,7 @@ type Props = {
   link: string;
 };
 
-function BlogListLayout({ blogs, link }: Props) {
+function BlogListLayout({ blogs, link }: Props): ReactElement {
   return (
     <div className="md:pl-4">
       {blogs.map((blog) => (

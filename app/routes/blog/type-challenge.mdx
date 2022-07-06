@@ -1,0 +1,49 @@
+---
+title: "TypeChallenge 振り返り用"
+createdAt: "2022/07/14"
+updatedAt: "2022/07/14"
+description: "Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする"
+category: "Programming"
+locale: "ja"
+tags:
+  - TypeScript
+meta:
+  title: "TypeChallenge 振り返り用 | yamakenji blog"
+  description: "Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする"
+  og:description: "Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする"
+  og:image: "https://og-image-yamakenji.vercel.app/Type Challenge 振り返り用.png"
+  twitter:image: "https://og-image-yamakenji.vercel.app/Type Challenge 振り返り用.png"
+---
+import { BlogLayout } from '../../components/blog/BlogLayout';
+
+<BlogLayout {...attributes}>
+こんにちは、@yamakenjiです。  
+
+## Easy
+### Pick
+TS標準の`Pick<T, K>`を自前で実装する
+いきなりMapped Types やkeyof等をうまく活用していく必要がある
+- K extends keyof T  
+TのオブジェクトからkeyだけをUnion型として持ってきて、それをKに渡す
+- [key in K]  
+inでUnion型に対してそれぞれのkeyを生成する
+
+```ts file="mypick.ts"
+type MyPick<T, K extends keyof T> = {
+  [key in K]: T[key];
+}
+```
+
+### Readonly
+TS標準の`Readonly<T>`を自前で実装する
+
+各プロパティに対して、readonlyをつけるだけ
+プロパティの抽出はPickと同様
+
+```ts file="myreadonly.ts"
+type MyReadonly<T> = {
+  readonly [key in keyof T]: T[key]
+}
+```
+
+</BlogLayout>

@@ -3,9 +3,11 @@ import * as firstPost from '../routes/blog/first-post.mdx';
 import * as reverseProxy from '../routes/blog/reverse-proxy.mdx';
 import * as whatsScrum from '../routes/blog/whats-scrum.mdx';
 import * as tsBlueBerry from '../routes/blog/reading-blueberry.mdx';
+import * as typeChallenge from '../routes/blog/type-challenge.mdx';
+
 // en
 import * as sample from '../routes/en/blog/sample.mdx';
-const defaultBlogs = [firstPost, reverseProxy, whatsScrum, tsBlueBerry];
+const defaultBlogs = [firstPost, reverseProxy, whatsScrum, tsBlueBerry, typeChallenge];
 const enblogs = [sample];
 
 export type Blog = {
