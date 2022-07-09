@@ -46,4 +46,17 @@ type MyReadonly<T> = {
 }
 ```
 
+### Tuple to Object
+MyPickやReadonlyと同じように実装する
+`const a = ['a', 'b'] as const`のようにタプルできた場合、
+typeof で肩を取って、T[number]とするとリテラル型がとれる
+
+```ts file="Tuple.ts"
+type TupleToObject<T extends readonly any[]> = {
+  [key in T[number]]: key
+}
+```
+
+
+
 </BlogLayout>
