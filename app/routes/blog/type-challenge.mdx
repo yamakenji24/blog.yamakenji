@@ -1,62 +1,101 @@
 ---
-title: "TypeChallenge 振り返り用"
-createdAt: "2022/07/14"
-updatedAt: "2022/07/14"
-description: "Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする"
-category: "Programming"
-locale: "ja"
+title: 'TypeChallenge 振り返り用'
+createdAt: '2022/07/14'
+updatedAt: '2022/07/14'
+description: 'Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする'
+category: 'Programming'
+locale: 'ja'
 tags:
   - TypeScript
 meta:
-  title: "TypeChallenge 振り返り用 | yamakenji blog"
-  description: "Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする"
-  og:description: "Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする"
-  og:image: "https://og-image-yamakenji.vercel.app/Type Challenge 振り返り用.png"
-  twitter:image: "https://og-image-yamakenji.vercel.app/Type Challenge 振り返り用.png"
+  title: 'TypeChallenge 振り返り用 | yamakenji blog'
+  description: 'Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする'
+  og:description: 'Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする'
+  og:image: 'https://og-image-yamakenji.vercel.app/Type Challenge 振り返り用.png'
+  twitter:image: 'https://og-image-yamakenji.vercel.app/Type Challenge 振り返り用.png'
 ---
+
 import { BlogLayout } from '../../components/blog/BlogLayout';
 
 <BlogLayout {...attributes}>
-こんにちは、@yamakenjiです。  
+こんにちは、@yamakenjiです。
 
 ## Easy
+
 ### Pick
-TS標準の`Pick<T, K>`を自前で実装する
-いきなりMapped Types やkeyof等をうまく活用していく必要がある
+
+TS 標準の`Pick<T, K>`を自前で実装する
+いきなり Mapped Types や keyof 等をうまく活用していく必要がある
+
 - K extends keyof T  
-TのオブジェクトからkeyだけをUnion型として持ってきて、それをKに渡す
+  T のオブジェクトから key だけを Union 型として持ってきて、それを K に渡す
 - [key in K]  
-inでUnion型に対してそれぞれのkeyを生成する
+  in で Union 型に対してそれぞれの key を生成する
 
 ```ts file="mypick.ts"
 type MyPick<T, K extends keyof T> = {
   [key in K]: T[key];
-}
+};
 ```
 
 ### Readonly
-TS標準の`Readonly<T>`を自前で実装する
 
-各プロパティに対して、readonlyをつけるだけ
-プロパティの抽出はPickと同様
+TS 標準の`Readonly<T>`を自前で実装する
+
+各プロパティに対して、readonly をつけるだけ
+プロパティの抽出は Pick と同様
 
 ```ts file="myreadonly.ts"
 type MyReadonly<T> = {
-  readonly [key in keyof T]: T[key]
-}
+  readonly [key in keyof T]: T[key];
+};
 ```
 
 ### Tuple to Object
-MyPickやReadonlyと同じように実装する
+
+MyPick や Readonly と同じように実装する
 `const a = ['a', 'b'] as const`のようにタプルできた場合、
 typeof で肩を取って、T[number]とするとリテラル型がとれる
 
 ```ts file="Tuple.ts"
 type TupleToObject<T extends readonly any[]> = {
-  [key in T[number]]: key
-}
+  [key in T[number]]: key;
+};
 ```
 
+### First of Array
 
+配列の最初の型を返すジェネリック型 First を実装する
+
+これは、TS(2.8 以降)の Conditional Types を利用する
+{`T extends U ? X : Y`} とすることで、U が T の部分型であれば X、そうでなければ Y とする
+下記では、空配列の場合は never、それ以外は配列の最初の型を返している
+
+```ts file="first.ts"
+type First<T extends any[]> = T extends [] ? never : T[0];
+```
+
+### Length of Tuple
+
+与えられたタプルの長さを返す型 Length を実装する
+これは、Indexed Access Types を利用する
+例えば、T が配列型なのであれば、`T[U]`とすることで、U にそのメソッドを入れることができる
+
+```ts file="length.ts"
+type Length<T extends readonly any[]> = T['length'];
+```
+
+### MyExclude
+
+TS 標準の Exclude を実装する
+Conditional Types を利用する
+Conditional Types は、型引数にユニオン型が与えられた場合、それぞれ反復して処理を行う
+
+ユニオン型である T を反復して U の部分型であるかを確認する
+ここでは、U が T の部分型なら never, そうでないならそのまま型を返す
+
+```ts file="myExclude.ts"
+type MyExclude<T, U> = T extends U ? never : T
+```
 
 </BlogLayout>
