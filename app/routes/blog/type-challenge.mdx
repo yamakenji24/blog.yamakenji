@@ -1,5 +1,5 @@
 ---
-title: 'TypeChallenge 振り返り用'
+title: 'TypeChallenge Easy編 振り返り用'
 createdAt: '2022/07/14'
 updatedAt: '2022/07/14'
 description: 'Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする'
@@ -8,20 +8,21 @@ locale: 'ja'
 tags:
   - TypeScript
 meta:
-  title: 'TypeChallenge 振り返り用 | yamakenji blog'
+  title: 'TypeChallenge Easy編 振り返り用 | yamakenji blog'
   description: 'Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする'
   og:description: 'Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする'
-  og:image: 'https://og-image-yamakenji.vercel.app/Type Challenge 振り返り用.png'
-  twitter:image: 'https://og-image-yamakenji.vercel.app/Type Challenge 振り返り用.png'
+  og:image: 'https://og-image-yamakenji.vercel.app/Type Challenge Easy編 振り返り用.png'
+  twitter:image: 'https://og-image-yamakenji.vercel.app/Type Challenge Easy編 振り返り用.png'
 ---
 
 import { BlogLayout } from '../../components/blog/BlogLayout';
 
 <BlogLayout {...attributes}>
 こんにちは、@yamakenjiです。
+今回は、[type-challenge](https://github.com/type-challenges/type-challenges)をちゃんとやっていきます  
+全133問のうち、easyの13問に着手(本当に簡単なのかな？)  
 
 ## Easy
-
 ### Pick
 
 TS 標準の`Pick<T, K>`を自前で実装する  
@@ -130,6 +131,29 @@ inferを利用し、再起的に配列に部分型であるかを確認する
 type Includes<T extends readonly any[], U> = T extends [infer First, ...infer rest] ? (
   Equal<First, U> extends true ? true : Includes<rest, U>
 ) : false
+```
+
+### Push
+Concatと同じように、スプレッド構文等で追加していく
+
+```ts file="push.ts"
+type Push<T extends any[], U> = [...T, U]
+```
+
+### Unshift
+ConcatやPushと同等
+
+```ts file="unshift.ts"
+type Unshift<T extends any[], U> = [U, ...T]
+```
+
+### Parameters
+Parametersはある関数型T引数の型をタプルとして取得する組み込み型
+`(...args):any[] => any`からParametersに渡したときに引数を取得できれば良い
+inferを用いていく
+
+```ts file="Parameters"
+type MyParameters<T extends (...args: any[]) => any> = T extends (...args: infer U) => any ? U : never
 ```
 
 </BlogLayout>
