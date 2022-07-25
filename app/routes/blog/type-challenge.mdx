@@ -1,0 +1,159 @@
+---
+title: 'TypeChallenge Easy編 振り返り用'
+createdAt: '2022/07/14'
+updatedAt: '2022/07/14'
+description: 'Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする'
+category: 'Programming'
+locale: 'ja'
+tags:
+  - TypeScript
+meta:
+  title: 'TypeChallenge Easy編 振り返り用 | yamakenji blog'
+  description: 'Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする'
+  og:description: 'Type Challengeでわかったことや思ったことを記録し、あとで振り返れるようにする'
+  og:image: 'https://og-image-yamakenji.vercel.app/Type Challenge Easy編 振り返り用.png'
+  twitter:image: 'https://og-image-yamakenji.vercel.app/Type Challenge Easy編 振り返り用.png'
+---
+
+import { BlogLayout } from '../../components/blog/BlogLayout';
+
+<BlogLayout {...attributes}>
+こんにちは、@yamakenjiです。
+今回は、[type-challenge](https://github.com/type-challenges/type-challenges)をちゃんとやっていきます  
+全133問のうち、easyの13問に着手(本当に簡単なのかな？)  
+
+## Easy
+### Pick
+
+TS 標準の`Pick<T, K>`を自前で実装する  
+いきなり Mapped Types や keyof 等をうまく活用していく必要がある  
+
+- K extends keyof T  
+  T のオブジェクトから key だけを Union 型として持ってきて、それを K に渡す
+- [key in K]  
+  in で Union 型に対してそれぞれの key を生成する
+
+```ts file="mypick.ts"
+type MyPick<T, K extends keyof T> = {
+  [key in K]: T[key];
+};
+```
+
+### Readonly
+
+TS 標準の`Readonly<T>`を自前で実装する
+
+各プロパティに対して、readonly をつけるだけ
+プロパティの抽出は Pick と同様
+
+```ts file="myreadonly.ts"
+type MyReadonly<T> = {
+  readonly [key in keyof T]: T[key];
+};
+```
+
+### Tuple to Object
+
+MyPick や Readonly と同じように実装する  
+`const a = ['a', 'b'] as const`のようにタプルできた場合、
+typeof で肩を取って、T[number]とするとリテラル型がとれる
+
+```ts file="Tuple.ts" {
+type TupleToObject<T extends readonly any[]> = {
+  [key in T[number]]: key;
+};
+```
+
+### First of Array
+
+配列の最初の型を返すジェネリック型 First を実装する
+
+これは、TS(2.8 以降)の Conditional Types を利用する  
+{`T extends U ? X : Y`} とすることで、U が T の部分型であれば X、そうでなければ Y とする  
+下記では、空配列の場合は never、それ以外は配列の最初の型を返している
+
+```ts file="first.ts"
+type First<T extends any[]> = T extends [] ? never : T[0];
+```
+
+### Length of Tuple
+
+与えられたタプルの長さを返す型 Length を実装する  
+これは、Indexed Access Types を利用する  
+例えば、T が配列型なのであれば、`T[U]`とすることで、U にそのメソッドを入れることができる
+
+```ts file="length.ts"
+type Length<T extends readonly any[]> = T['length'];
+```
+
+### MyExclude
+
+TS 標準の Exclude を実装する  
+Conditional Types を利用する  
+Conditional Types は、型引数にユニオン型が与えられた場合、それぞれ反復して処理を行う
+
+ユニオン型である T を反復して U の部分型であるかを確認する  
+ここでは、U が T の部分型なら never, そうでないならそのまま型を返す  
+
+```ts file="myExclude.ts"
+type MyExclude<T, U> = T extends U ? never : T
+```
+
+### Awaited
+PromiseでWrapされている型を抽出する  
+inferを利用し、型を利用する時に代入した型を推論して利用する  
+
+{`Promise<any>`}を受け取った上で、実際に評価するときにinfer Pで推論する
+
+```ts file="awaited.ts"
+type MyAwaited<T> = T extends Promise<infer P> ? P extends Promise<any> ? MyAwaited<P> : P : error;
+```
+
+### If
+Conditional Typesを利用する
+
+```ts file="if.ts"
+type If<C extends boolean, T, F> = C extends true ? T : F;
+```
+
+### Concat
+配列のスプレッド構文を型で行う  
+
+```ts file="concat.ts"
+type Concat<T extends any[], U extends any[]> = [...T, ...U]
+```
+
+### Includes
+inferを利用し、再起的に配列に部分型であるかを確認する  
+[infer First, ...infer rest] で、配列の最初の型をTに抽出、配列全体を再起的に確認する  
+
+```ts file="includes.ts"
+type Includes<T extends readonly any[], U> = T extends [infer First, ...infer rest] ? (
+  Equal<First, U> extends true ? true : Includes<rest, U>
+) : false
+```
+
+### Push
+Concatと同じように、スプレッド構文等で追加していく
+
+```ts file="push.ts"
+type Push<T extends any[], U> = [...T, U]
+```
+
+### Unshift
+ConcatやPushと同等
+
+```ts file="unshift.ts"
+type Unshift<T extends any[], U> = [U, ...T]
+```
+
+### Parameters
+Parametersはある関数型T引数の型をタプルとして取得する組み込み型
+`(...args):any[] => any`からParametersに渡したときに引数を取得できれば良い
+inferを用いていく
+
+```ts file="Parameters"
+type MyParameters<T extends (...args: any[]) => any> = T extends (...args: infer U) => any ? U : never
+```
+
+</BlogLayout>
