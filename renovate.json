@@ -8,5 +8,7 @@
   "branchConcurrentLimit": 0,
   "ignorePaths": [
     ".github/workflows/*"
-  ]
+  ],
+  "prHourlyLimit": 0,
+  "prConcurrentLimit": 5
 }
