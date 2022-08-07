@@ -80,7 +80,7 @@
     "prettier": "^2.4.1",
     "sitemap-generator": "^7.5.2",
     "tailwindcss": "^2.2.19",
-    "ts-jest": "^27.0.7",
+    "ts-jest": "27.1.5",
     "typescript": "^4.6.4"
   },
   "sideEffects": false,
