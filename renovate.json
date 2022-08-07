@@ -10,5 +10,7 @@
     ".github/workflows/*"
   ],
   "prHourlyLimit": 0,
-  "prConcurrentLimit": 5
+  "prConcurrentLimit": 20,
+  "labels": ["Renovate"],
+  "commitMessagePrefix": "[Renovate] "
 }
