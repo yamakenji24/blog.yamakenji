@@ -6,5 +6,5 @@
   ],
   "ignorePresets": [":prHourlyLimit2"],
   "timezone": "Asia/Tokyo",
-  "branchConcurrentLimit": 0
+  "branchConcurrentLimit": "0"
 }
