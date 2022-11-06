@@ -1,0 +1,132 @@
+---
+title: "Zod tutorial 入門してみた"
+createdAt: "2022/11/06"
+updatedAt: "2022/11/06"
+description: "Zod tutorialやったので、記録しておく"
+category: "Programming"
+locale: "ja"
+tags:
+  - TypeScript
+meta:
+  title: "Zod tutorial 入門してみた | yamakenji blog"
+  description: "Zod tutorialやったので、記録しておく"
+  og:description: "Zod tutorialやったので、記録しておく"
+  og:image: "https://og-image-yamakenji.vercel.app/Zod tutorial 入門してみた.png"
+  twitter:image: "https://og-image-yamakenji.vercel.app/Zod tutorial 入門してみた.png"
+---
+import { BlogLayout } from '../../components/blog/BlogLayout';
+
+<BlogLayout {...attributes}>
+## はじめに
+こんにちは、@yamakenjiです。
+Twitterを眺めていると、なにやらZodを試せるチュートリアルなるものがあることを知ったので、
+これは試すしかないとおもって試してみました。
+
+## Zodについて
+[Zod](https://zod.dev/)とは、TypeScript-firstなスキーマ定義とバリデーションを行うライブラリです。  
+Astroがスポンサー枠にいたり、[blitz](https://github.com/blitz-js/blitz)や[tRPC](https://github.com/trpc/trpc)などに
+使われています。  
+重複した型定義をなくすことを目的としており、以下の特徴を持っています。
+- Zero dependencies
+- Node.jsや全てのモダンブラウザで動作する
+- 小さい: 8kb minified + zipped
+- イミュータブル
+- 簡潔でチェイン可能なインターフェース
+- 関数型アプローチ: parse, don't validate
+- plain JSでも動作する (TSは必要ないよ)  
+
+## チュートリアルについて
+チュートリアルと書いてますが、あらかじめ型エラーかランタイムエラーが発生するサンプル問題とテストコードが用意されており、テストを通しながらZodの基本的な使い方を学んでいきます。
+[https://github.com/total-typescript/zod-tutorial](https://github.com/total-typescript/zod-tutorial)に公開されていて、手元で動かしながら問題を解くことができます。
+全14問あり、以下のような構成になっています。
+1. Runtime Type Checking with Zod
+2. Verify Unknown APIs with an Object Schema
+3. Create an Array of Custom Types
+4. Extract a Type from a Passer Object
+5. Make Schemas Optional
+6. Set a Default Value with Zod
+7. Be Specific with Allowed Types
+8. Complex Schema Validation
+9. Reduce Duplicated Code by Composing Schemas
+10. Transform Data from Within a Schema
+11. refineを使用して任意にvalidationする
+12. refineのasync awaitバージョン
+13. スキーマ定義を再帰的に使用するためのlazyパターン
+14. Genericsを使用してスキーマ定義
+
+1~3までの問題では、主にZodの基本的な使い方を学ぶことができます。TypeScriptのプリミティブな値に対してスキーマ定義を行い、validationを行います。  
+4~9までの問題では、inferやunionといったTypeScriptの型の組み合わせをZodでどう扱うかみたいな問題を学ぶことができます。  
+10~からは、実際に独自のvalidationルールを書きながらスキーマ定義も行うといったZodらしい、Zodを実際に利用する上でのカバーポイントみたいな問題を学べます。  
+
+## 実際にどんな使い方するのか
+実際にコードベースではどんな使い方をするのかというところで、第3問目と第11問目を紹介させていただきます。  
+自分がチュートリアルを通して解答したものも載せておきます。[自分の解答](https://github.com/yamakenji24/zod-tutorial)
+
+### Create an Array of Custom Types
+この問題では、連想配列をスキーマ定義していきます。  
+求める型定義は以下のようなものです
+```ts
+type Answer = {
+  results: {
+    name: string;
+  }[]
+}
+const answer: Answer = {
+  results: [{name: 'one'}, {name: 'two'}]
+}
+```
+これに対してZodを使用したスキーマ定義では以下のようになります。  
+```ts
+import { z } from "zod";
+
+const StarWarsPerson = z.object({
+  name: z.string(),
+});
+
+const StarWarsPeopleResults = z.object({
+  results: StarWarsPerson.array(),
+});
+```
+`z.string()`や`z.object()`でスキーマ定義を行っています。また、`z.array()`でも配列を定義することは可能ですが、一度定義したZodSchemaはチェインで`.array()`みたいにつなぐこともできます。
+これらを組み合わせて、上記では連想配列をスキーマ定義しています。
+
+```ts
+export const fetchStarWarsPeople = async () => {
+  --- 
+  const parsedData = StarWarsPeopleResults.parse(data);
+};
+
+```
+定義したスキーマに対して、parseメソッドを用いてデータをparse、validationしていきます。スキーマを満たさないデータが渡されていたらエラーをはいてくれます。  
+
+### refineを使用して任意にvalidationする
+この問題では、定義したスキーマをもとに、任意のvalidationロジックを実装していきます。  
+
+```ts
+import { z } from "zod";
+
+const Form = z
+  .object({
+    password: z.string(),
+    confirmPassword: z.string(),
+  })
+  .refine(
+    (val) => {
+      return val.password === val.confirmPassword;
+    },
+    {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    }
+  );
+```
+`z.object()`までは、Object型のスキーマ定義を行っており、それに対してrefineを用いて等価処理を行っています。
+refineの第一引数には実装したいvalidationロジックを、第二引数にエラーメッセージやエラーパスといったオプションを指定することができます。
+[公式Zod refine docs](https://zod.dev/?id=refine)
+
+## おわりに
+Zodのチュートリアルと簡単な使い方をご紹介させていただきました  
+型定義を行いながらvalidationロジックも簡単に書けるのはすごく魅力的だなと思いました。また、emailやurlといったものをちゃんと検証するには正規表現などを書く必要がありますが、Zodでは内包してくれているので(z.string().url()とか)、簡単な検証ならこれで済ませることができるのもいいなと思いました。(厳密に独自に定義したかったら自分で書く必要がありそう・・？)  
+また、react-hook-formと組み合わせて使えたり、環境変数、Next.jsのAPI Routesとかにも使えそうなので、使えるところは使って安心な型生活を送りたいなと思います。
+
+</BlogLayout>
