@@ -4,10 +4,11 @@ import * as reverseProxy from '../routes/blog/reverse-proxy.mdx';
 import * as whatsScrum from '../routes/blog/whats-scrum.mdx';
 import * as tsBlueBerry from '../routes/blog/reading-blueberry.mdx';
 import * as typeChallenge from '../routes/blog/type-challenge.mdx';
+import * as zodTutorial from '../routes/blog/zod-tutorial.mdx';
 
 // en
 import * as sample from '../routes/en/blog/sample.mdx';
-const defaultBlogs = [firstPost, reverseProxy, whatsScrum, tsBlueBerry, typeChallenge];
+const defaultBlogs = [firstPost, reverseProxy, whatsScrum, tsBlueBerry, typeChallenge, zodTutorial];
 const enblogs = [sample];
 
 export type Blog = {
