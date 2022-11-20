@@ -64,7 +64,7 @@
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "autoprefixer": "^10.4.0",
-    "babel-loader": "^8.2.5",
+    "babel-loader": "^9.0.0",
     "chromatic": "^6.6.3",
     "cross-env": "^7.0.3",
     "eslint": "^8.3.0",
