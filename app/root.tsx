@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { type ReactNode, useState, useEffect, useRef, memo } from 'react';
 import type { LinksFunction, LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import {
@@ -45,12 +45,12 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function App() {
   const { tags, categories, _locale } = useLoaderData<LoaderData>();
-  const [newTags, setNewTags] = React.useState(tags);
-  const [newCategories, setNewCategories] = React.useState(categories);
+  const [newTags, setNewTags] = useState(tags);
+  const [newCategories, setNewCategories] = useState(categories);
   const locale = useGetLocale();
   const link = i18nData[locale].link;
 
-  React.useEffect(() => {
+  useEffect(() => {
     setNewTags(getAllTags(locale));
     setNewCategories(getAllCategories(locale));
   }, [locale]);
@@ -69,7 +69,7 @@ function Document({
   title,
   locale,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   title?: string;
   locale: string;
 }) {
@@ -111,7 +111,7 @@ function Document({
   );
 }
 type Props = {
-  children: React.PropsWithChildren<Record<any, any>>;
+  children: ReactNode;
   link: string;
 } & Omit<LoaderData, '_locale'>;
 
@@ -175,17 +175,17 @@ export function ErrorBoundary({ error }: { error: Error }) {
 /**
  * Provides an alert for screen reader users when the route changes.
  */
-const RouteChangeAnnouncement = React.memo(() => {
-  const [hydrated, setHydrated] = React.useState(false);
-  const [innerHtml, setInnerHtml] = React.useState('');
+const RouteChangeAnnouncement = memo(() => {
+  const [hydrated, setHydrated] = useState(false);
+  const [innerHtml, setInnerHtml] = useState('');
   const location = useLocation();
 
-  React.useEffect(() => {
+  useEffect(() => {
     setHydrated(true);
   }, []);
 
-  const firstRenderRef = React.useRef(true);
-  React.useEffect(() => {
+  const firstRenderRef = useRef(true);
+  useEffect(() => {
     // Skip the first render because we don't want an announcement on the
     // initial page load.
     if (firstRenderRef.current) {
