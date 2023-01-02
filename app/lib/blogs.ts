@@ -5,10 +5,19 @@ import * as whatsScrum from '../routes/blog/whats-scrum.mdx';
 import * as tsBlueBerry from '../routes/blog/reading-blueberry.mdx';
 import * as typeChallenge from '../routes/blog/type-challenge.mdx';
 import * as zodTutorial from '../routes/blog/zod-tutorial.mdx';
+import * as stylelintCssInJs from '../routes/blog/stylelint-styled-component-v14.mdx';
 
 // en
 import * as sample from '../routes/en/blog/sample.mdx';
-const defaultBlogs = [firstPost, reverseProxy, whatsScrum, tsBlueBerry, typeChallenge, zodTutorial];
+const defaultBlogs = [
+  firstPost,
+  reverseProxy,
+  whatsScrum,
+  tsBlueBerry,
+  typeChallenge,
+  zodTutorial,
+  stylelintCssInJs,
+];
 const enblogs = [sample];
 
 export type Blog = {

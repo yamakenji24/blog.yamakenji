@@ -1,0 +1,63 @@
+---
+title: "stylelint v14でのcss in jsの対応"
+createdAt: "2023/01/03"
+updatedAt: "2023/01/03"
+description: "stylelint v14で@stylelint/postcss-css-in-jsがdeprecatedになったのでまとめておく"
+category: "Programming"
+locale: "ja"
+tags:
+  - Linter
+meta:
+  title: "stylelint v14でのcss in jsの対応 | yamakenji blog"
+  description: "stylelint v14で@stylelint/postcss-css-in-jsがdeprecatedになったのでまとめておく"
+  og:description: "stylelint v14で@stylelint/postcss-css-in-jsがdeprecatedになったのでまとめておく"
+  og:image: "https://og-image-yamakenji.vercel.app/stylelint v14でのcss in jsの対応.png"
+  twitter:image: "https://og-image-yamakenji.vercel.app/stylelint v14でのcss in jsの対応.png"
+---
+import { BlogLayout } from '../../components/blog/BlogLayout';
+
+<BlogLayout {...attributes}>
+こんにちは、@yamakenjiです。  
+この前、フロントエンドの環境構築時にlinterを導入しようとした時に、CSS-in-JS(styled-component)関連で調査をしたのでそのまとめ。
+@2023年1月3日時点での情報。現在活発に議論と開発が進んでいるため、情報が古くなると思います。  
+
+## これまででは
+これまではどうやって導入していたのかというところで、まずは[styled-componentの公式doc](https://styled-components.com/docs/tooling#stylelint)
+をみてみたいと思います。  
+
+docには、`stylelint-processor-styled-components`をインストールする記載がありますがこのライブラリはすでに
+archiveされており、deprecated扱いになっています。  
+docから無くす[issue](https://github.com/styled-components/styled-components-website/issues/671)が2020年に立ち上がっていますが未だopenの
+ままのようです。  
+
+styled-componentのようなCSS-in-JSで動かすには今までは以下のようなことをおこなってきました。
+
+```bash
+npm install -D stylelint stylelint-config-standard postcss-syntax @stylelint/postcss-css-in-js
+```
+
+```js file="stylelint.config.js
+// stylelint.config.js
+module.exports = {
+  extends: 'stylelint-config-standard',
+  overrides: [
+    {
+      files: ['**/*.{js,jsx,ts,tsx}'],
+      customSyntax: '@stylelint/postcss-css-in-js'
+    }
+  ]
+}
+```
+ただし、`@stylelint/postcss-css-in-js`が近い将来deprecatedになることがわかっています。  
+[Deprecate package #225 ](https://github.com/stylelint/postcss-css-in-js/issues/225)  
+また、stylelint v14系からvanilla CSS以外は構文解析するために別途インストールする必要があります。  
+[syntax option and automatic inferral of syntax](https://github.com/stylelint/stylelint/blob/main/docs/migration-guide/to-14.md#syntax-option-and-automatic-inferral-of-syntax)  
+
+## @stylelint/postcss-css-in-js以外の対応
+@stylelint/postcss-css-in-jsがdeprecatedになるため、新しいsyntaxを開発する必要があると議論がされています。   
+[customSyntax for Stylelint v14+ #3897 ](https://github.com/styled-components/styled-components/issues/3897)  
+ベースにpostcss-litをしたらどうかやstyled-component用に新しく開発が進んでいるようです。[postcss-styled-components](https://github.com/43081j/postcss-styled-components)  
+
+試しにpostcss-styled-componentsを使ってみると正常にエラー検知してくれるものとしてくれないものがあったので、もう少し様子見をしたいなと思います。
+
+</BlogLayout>
