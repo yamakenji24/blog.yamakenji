@@ -10,8 +10,7 @@ import {
   ScrollRestoration,
   useLoaderData,
   useLocation,
-  useRouteError,
-  isRouteErrorResponse,
+  useCatch,
 } from '@remix-run/react';
 import { usePageTitle, getLocaleFromURL, useGetLocale } from './hooks';
 import { SideBar } from './components/common';
@@ -129,25 +128,42 @@ function Layout({ tags, categories, children, link }: Props) {
   );
 }
 
-export function ErrorBoundary() {
-  const error = useRouteError();
-  console.error(error);
+export function CatchBoundary() {
+  const caught = useCatch();
 
-  if (isRouteErrorResponse(error)) {
-    return (
-      <div>
-        <h1>Oops</h1>
-        <p>Status: {error.status}</p>
-        <p>{error.data.message}</p>
-      </div>
-    );
+  let message;
+  switch (caught.status) {
+    case 401:
+      message = <p>Oops! Looks like you tried to visit a page that you do not have access to.</p>;
+      break;
+    case 404:
+      message = <p>Oops! Looks like you tried to visit a page that does not exist.</p>;
+      break;
+
+    default:
+      throw new Error(caught.data || caught.statusText);
   }
 
+  return (
+    <Document title={`${caught.status} ${caught.statusText}`} locale="en">
+      <Layout tags={[]} categories={[]} link="">
+        <h1>
+          {caught.status}: {caught.statusText}
+        </h1>
+        {message}
+      </Layout>
+    </Document>
+  );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  console.error(error);
   return (
     <Document title="Error!" locale="en">
       <Layout tags={[]} categories={[]} link="">
         <div>
           <h1>There was an error</h1>
+          <p>{error.message}</p>
           <hr />
           <p>Hey, developer, you should replace this with what you want your users to see.</p>
         </div>
