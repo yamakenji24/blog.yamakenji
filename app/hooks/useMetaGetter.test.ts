@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { DESCRIPTION, DEFAULT_PAGE_TITLE, usePageTitle, usePageDescription } from '.';
 
 describe('usePageDescription', () => {
