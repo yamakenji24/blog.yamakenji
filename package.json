@@ -24,25 +24,25 @@
   "dependencies": {
     "@emotion/react": "^11.6.0",
     "@emotion/styled": "^11.6.0",
-    "@remix-run/node": "^1.5.1",
-    "@remix-run/react": "^1.5.1",
-    "@remix-run/vercel": "^1.5.1",
+    "@remix-run/node": "^1.15.0",
+    "@remix-run/react": "^1.15.0",
+    "@remix-run/vercel": "^1.15.0",
     "@tailwindcss/typography": "^0.4.1",
     "esbuild": "^0.14.27",
     "framer-motion": "^4.1.17",
     "gray-matter": "^4.0.3",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "react-i18next": "^11.16.7",
     "react-icons": "^4.3.1",
     "recoil": "^0.7.2",
     "rehype-highlight": "^5.0.2",
-    "remix": "^1.5.1"
+    "remix": "^1.15.0"
   },
   "devDependencies": {
     "@babel/core": "7.18.10",
-    "@remix-run/dev": "^1.5.1",
-    "@remix-run/serve": "^1.5.1",
+    "@remix-run/dev": "^1.15.0",
+    "@remix-run/serve": "^1.15.0",
     "@storybook/addon-a11y": "^6.5.9",
     "@storybook/addon-actions": "^6.5.6",
     "@storybook/addon-essentials": "^6.5.6",
@@ -58,8 +58,8 @@
     "@testing-library/react-hooks": "^7.0.2",
     "@testing-library/user-event": "^14.2.0",
     "@types/jest": "^27.0.3",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.1",
     "@types/sitemap-generator": "^8.5.1",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
@@ -81,7 +81,7 @@
     "sitemap-generator": "^7.5.2",
     "tailwindcss": "^2.2.19",
     "ts-jest": "^27.0.7",
-    "typescript": "^4.6.4"
+    "typescript": "^4.9.5"
   },
   "sideEffects": false,
   "lint-staged": {
