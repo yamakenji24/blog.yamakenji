@@ -1,4 +1,5 @@
 module.exports = {
+  "typescript" : { reactDocgen: false },
   "stories": [
     "../app/components/**/*.stories.@(js|jsx|ts|tsx)",
     "../stories/**/*.stories.mdx",
@@ -18,5 +19,14 @@ module.exports = {
       },
     },
   ],
-  "framework": "@storybook/react"
+  "framework": "@storybook/react",
+  core: {
+    builder: {
+      name: 'webpack5',
+      options: {
+        lazyCompilation: true,
+        fsCache: true,
+      },
+    }
+  }
 }

@@ -1,7 +1,7 @@
-import type { LoaderFunction } from 'remix';
+import type { LoaderArgs } from '@remix-run/node';
 import { getAllBlogs } from '~/lib/blogs';
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
   const blogs = getAllBlogs();
 
   const host = request.headers.get('X-Forwarded-Host') ?? request.headers.get('Host');
@@ -44,4 +44,4 @@ export const loader: LoaderFunction = async ({ request }) => {
       'Content-Length': String(Buffer.byteLength(rssString)),
     },
   });
-};
+}

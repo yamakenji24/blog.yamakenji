@@ -1,4 +1,4 @@
-import { renderHook } from '@testing-library/react-hooks';
+import { renderHook } from '@testing-library/react';
 import { RecoilRoot } from 'recoil';
 import { getLocaleFromURL, useLocale } from '.';
 import { i18nData } from '../lib/i18n';

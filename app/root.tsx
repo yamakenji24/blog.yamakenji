@@ -1,5 +1,5 @@
 import { type ReactNode, useState, useEffect, useRef, memo } from 'react';
-import type { LinksFunction, LoaderFunction } from '@remix-run/node';
+import type { LinksFunction, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import {
   Links,
@@ -30,7 +30,7 @@ export const links: LinksFunction = () => {
   return [{ rel: 'stylesheet', href: styles }];
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
   const _locale = getLocaleFromURL(request.url);
   const tags = getAllTags(_locale);
   const categories = getAllCategories(_locale);
@@ -41,10 +41,10 @@ export const loader: LoaderFunction = async ({ request }) => {
       'Cache-Control': 'public, max-age=60 s-maxage=60',
     },
   });
-};
+}
 
 export default function App() {
-  const { tags, categories, _locale } = useLoaderData<LoaderData>();
+  const { tags, categories } = useLoaderData<typeof loader>();
   const [newTags, setNewTags] = useState(tags);
   const [newCategories, setNewCategories] = useState(categories);
   const locale = useGetLocale();
