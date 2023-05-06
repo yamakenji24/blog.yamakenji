@@ -39,7 +39,7 @@ export function meta() {
 
   return [
     { title: title },
-    { description: description },
+    { name: 'description', content: description },
     { property: 'og:description', content: description },
     { property: 'og:title', content: title },
     { property: 'og:image', content: ogImage },

@@ -38,7 +38,7 @@ export function meta() {
 
   return [
     { title: title },
-    { description: description },
+    { name: 'description', content: description },
     { property: 'og:description', content: description },
     { property: 'og:image', content: ogImage },
     { property: 'twitter:image', content: ogImage },
