@@ -40,7 +40,7 @@
     "remix": "^1.15.0"
   },
   "devDependencies": {
-    "@babel/core": "7.18.10",
+    "@babel/core": "^7.21.8",
     "@remix-run/dev": "^1.15.0",
     "@remix-run/serve": "^1.15.0",
     "@storybook/addon-a11y": "^6.5.9",
