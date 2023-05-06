@@ -1,4 +1,4 @@
-import type { MetaFunction, LoaderFunction } from '@remix-run/node';
+import type { MetaFunction, LoaderArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 
@@ -18,7 +18,7 @@ type LoaderData = {
   locale: 'en' | 'ja';
 };
 
-export const loader: LoaderFunction = async ({ request }) => {
+export async function loader({ request }: LoaderArgs) {
   const locale = getLocaleFromURL(request.url);
   const blogs = getAllBlogs();
   const data: LoaderData = { blogs, locale };
@@ -28,7 +28,7 @@ export const loader: LoaderFunction = async ({ request }) => {
       'Cache-Control': 'public, max-age=60 s-maxage=60',
     },
   });
-};
+}
 
 // https://remix.run/api/conventions#meta
 export const meta: MetaFunction = () => {
