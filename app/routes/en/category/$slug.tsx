@@ -1,4 +1,4 @@
-import type { MetaFunction, LoaderFunction } from '@remix-run/node';
+import type { LoaderFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import {
@@ -32,20 +32,20 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   });
 };
 
-export const meta: MetaFunction = () => {
+export function meta() {
   const description = usePageDescription();
   const title = usePageTitle();
   const ogImage = useOGImageUrl();
 
-  return {
-    title: title,
-    description: description,
-    'og:description': description,
-    'og:title': title,
-    'og:image': ogImage,
-    'twitter:image': ogImage,
-  };
-};
+  return [
+    { title: title },
+    { description: description },
+    { property: 'og:description', content: description },
+    { property: 'og:title', content: title },
+    { property: 'og:image', content: ogImage },
+    { property: 'twitter:image', content: ogImage },
+  ];
+}
 
 export default function ENCategoryBlog() {
   const { enblogs, category, locale } = useLoaderData<LoaderData>();

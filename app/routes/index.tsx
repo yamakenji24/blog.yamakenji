@@ -31,20 +31,20 @@ export async function loader({ request }: LoaderArgs) {
 }
 
 // https://remix.run/api/conventions#meta
-export const meta: MetaFunction = () => {
+export function meta() {
   const description = usePageDescription();
   const title = usePageTitle();
   const ogImage = useOGImageUrl();
 
-  return {
-    title: title,
-    description: description,
-    'og:description': description,
-    'og:title': title,
-    'og:image': ogImage,
-    'twitter:image': ogImage,
-  };
-};
+  return [
+    { title: title },
+    { description: description },
+    { property: 'og:description', content: description },
+    { property: 'og:title', content: title },
+    { property: 'og:image', content: ogImage },
+    { property: 'twitter:image', content: ogImage },
+  ];
+}
 
 // https://remix.run/guides/routing#index-routes
 export default function Index() {
