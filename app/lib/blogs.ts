@@ -6,6 +6,7 @@ import * as tsBlueBerry from '../routes/blog/reading-blueberry.mdx';
 import * as typeChallenge from '../routes/blog/type-challenge.mdx';
 import * as zodTutorial from '../routes/blog/zod-tutorial.mdx';
 import * as stylelintCssInJs from '../routes/blog/stylelint-styled-component-v14.mdx';
+import * as frontendGear from '../routes/blog/frontend-gear.mdx';
 
 // en
 import * as sample from '../routes/en/blog/sample.mdx';
@@ -17,6 +18,7 @@ const defaultBlogs = [
   typeChallenge,
   zodTutorial,
   stylelintCssInJs,
+  frontendGear,
 ];
 const enblogs = [sample];
 
