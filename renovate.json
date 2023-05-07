@@ -10,7 +10,15 @@
     ".github/workflows/*"
   ],
   "prHourlyLimit": 0,
-  "prConcurrentLimit": 20,
+  "prConcurrentLimit": 15,
   "labels": ["Renovate"],
-  "commitMessagePrefix": "[Renovate] "
+  "commitMessagePrefix": "[Renovate] ",
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "automerge": true,
+      "automergeSchedule": ["before 12am every weekday"]
+    }
+  ],
+  "schedule": ["before 9am every weekday"]
 }
