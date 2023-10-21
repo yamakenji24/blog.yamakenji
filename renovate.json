@@ -5,12 +5,11 @@
   ],
   "ignorePresets": [":prHourlyLimit2"],
   "timezone": "Asia/Tokyo",
-  "branchConcurrentLimit": 0,
   "ignorePaths": [
     ".github/workflows/*"
   ],
   "prHourlyLimit": 0,
-  "prConcurrentLimit": 15,
+  "prConcurrentLimit": 10,
   "labels": ["Renovate"],
   "commitMessagePrefix": "[Renovate] ",
   "packageRules": [
