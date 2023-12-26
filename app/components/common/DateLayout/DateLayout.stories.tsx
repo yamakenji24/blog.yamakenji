@@ -1,19 +1,15 @@
-import { ComponentMeta } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
 import { DateLayout } from './DateLayout';
 
-export default {
+const meta: Meta<typeof DateLayout> = {
   title: 'components/DateLayout',
   component: DateLayout,
-  parameters: {
-    docs: {
-      description: {
-        component: 'DateLayoutのコンポーネント',
-      },
-    },
-  },
-} as ComponentMeta<typeof DateLayout>;
+};
 
-export const Default = {
+export default meta;
+type Story = StoryObj<typeof DateLayout>;
+
+export const Default: Story = {
   args: {
     createdAt: '2022/01/01',
   },
@@ -24,7 +20,7 @@ export const Default = {
   },
 };
 
-export const UpdatedDateLayout = {
+export const UpdatedDateLayout: Story = {
   args: {
     createdAt: '2022/01/01',
     updatedAt: '2022/06/01',

@@ -1,7 +1,7 @@
-import { ComponentMeta } from '@storybook/react';
+import { Meta } from '@storybook/react';
 import { Tag } from './Tag';
 
-export default {
+const meta: Meta<typeof Tag> = {
   title: 'components/Tag',
   component: Tag,
   parameters: {
@@ -11,7 +11,9 @@ export default {
       },
     },
   },
-} as ComponentMeta<typeof Tag>;
+};
+
+export default meta;
 
 export const Default = {
   args: {
