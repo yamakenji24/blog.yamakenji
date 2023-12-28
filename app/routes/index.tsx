@@ -1,4 +1,4 @@
-import type { MetaFunction, LoaderArgs } from '@remix-run/node';
+import type { MetaFunction, LoaderFunctionArgs } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 
@@ -18,7 +18,7 @@ type LoaderData = {
   locale: 'en' | 'ja';
 };
 
-export async function loader({ request }: LoaderArgs) {
+export async function loader({ request }: LoaderFunctionArgs) {
   const locale = getLocaleFromURL(request.url);
   const blogs = getAllBlogs();
   const data: LoaderData = { blogs, locale };
@@ -36,14 +36,14 @@ export const meta: MetaFunction = () => {
   const title = usePageTitle();
   const ogImage = useOGImageUrl();
 
-  return {
-    title: title,
-    description: description,
-    'og:description': description,
-    'og:title': title,
-    'og:image': ogImage,
-    'twitter:image': ogImage,
-  };
+  return [
+    { title: title },
+    { name: 'description', content: description },
+    { property: 'og:description', content: description },
+    { property: 'og:title', content: title },
+    { property: 'og:image', content: ogImage },
+    { property: 'twitter:image', content: ogImage },
+  ];
 };
 
 // https://remix.run/guides/routing#index-routes
