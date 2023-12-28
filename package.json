@@ -5,7 +5,7 @@
   "license": "",
   "scripts": {
     "build": "run-s build:css build:app",
-    "build:app": "cross-env NODE_ENV=production remix build",
+    "build:app": "remix build",
     "build:css": "postcss styles --base styles --dir app/styles --env production",
     "build:sitemap": "esbuild ./app/lib/sitemap.ts --bundle --format=esm --define:process.env.NODE_ENV='\"development\"' --watch --platform=node",
     "build:storybook": "storybook build",
