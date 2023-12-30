@@ -7,6 +7,7 @@ import * as typeChallenge from '../routes/blog/type-challenge.mdx';
 import * as zodTutorial from '../routes/blog/zod-tutorial.mdx';
 import * as stylelintCssInJs from '../routes/blog/stylelint-styled-component-v14.mdx';
 import * as frontendGear from '../routes/blog/frontend-gear.mdx';
+import * as lookingBackOn2023 from '../routes/blog/looking-back-on-2023.mdx';
 
 // en
 import * as sample from '../routes/en/blog/sample.mdx';
@@ -19,6 +20,7 @@ const defaultBlogs = [
   zodTutorial,
   stylelintCssInJs,
   frontendGear,
+  lookingBackOn2023,
 ];
 const enblogs = [sample];
 
