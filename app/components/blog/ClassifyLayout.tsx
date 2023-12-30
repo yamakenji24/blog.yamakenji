@@ -1,4 +1,3 @@
-import * as React from 'react';
 import { LinkLayout, Tag } from '~/components/common';
 
 type Props = {
