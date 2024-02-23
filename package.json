@@ -2,6 +2,10 @@
   "private": true,
   "name": "remix-app-template",
   "description": "",
+  "engines": {
+    "node": "20.11.0",
+    "npm": ">= 10.1.0"
+  },
   "license": "",
   "scripts": {
     "build": "run-s build:css build:app",
@@ -19,7 +23,8 @@
     "lint:fix": "eslint 'app/**/*.{js,jsx,ts,tsx}' --fix",
     "fmt": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' && eslint 'app/**/*.{js,jsx,ts,tsx}'",
     "lint-staged": "lint-staged",
-    "storybook": "storybook dev -p 6006"
+    "storybook": "storybook dev -p 6006",
+    "install:playwright": "playwright install --with-deps"
   },
   "dependencies": {
     "@emotion/react": "^11.6.0",
