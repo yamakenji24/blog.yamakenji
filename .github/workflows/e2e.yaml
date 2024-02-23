@@ -36,6 +36,8 @@ jobs:
       - name: Update Snapshots if failed
         if: failure()
         run: npm run test:update-snapshots
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
       - name: Create Pull Request
         if: failure()
         id: create_pr
