@@ -19,6 +19,7 @@
     "watch:css": "postcss styles --base styles --dir app/styles -w",
     "test": "vitest",
     "test:e2e": "playwright test",
+    "test:update-snapshots": "playwright test --update-snapshots",
     "lint": "eslint 'app/**/*.{js,jsx,ts,tsx}' || exit 0",
     "lint:fix": "eslint 'app/**/*.{js,jsx,ts,tsx}' --fix",
     "fmt": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' && eslint 'app/**/*.{js,jsx,ts,tsx}'",
