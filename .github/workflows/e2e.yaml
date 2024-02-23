@@ -19,6 +19,8 @@ jobs:
       pull-requests: write
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version-file: 'package.json'
@@ -52,10 +54,11 @@ jobs:
           pr_title="Update Screenshot $update_date"
           branch_name="update_screenshot_$update_datetime"
 
-          git checkout -b $branch_name
-          git add e2e
+          git checkout -b $branch_name "master"
+          git add e2e/blog-watcher.spec.ts-snapshots
           git commit -m "Update Screenshot $update_date"
           git push origin $branch_name
-          pr_url=$(gh pr create --base main --head $branch_name --title "$pr_title" --body "$body")
+
+          pr_url=$(gh pr create --base master --head $branch_name --title "$pr_title" --body "$body")
           echo "pr_url=$(echo $pr_url)" >> $GITHUB_OUTPUT
           echo "pr_title=$(echo $pr_title)" >> $GITHUB_OUTPUT
