@@ -1,0 +1,47 @@
+name: Update SnapShots
+on:
+  workflow_dispatch:
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TZ: Asia/Tokyo
+
+jobs:
+  update-snapshots:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: 'package.json'
+      - name: Install dependencies
+        run: npm ci
+      - name: Install playwright
+        run: npm run install:playwright
+      - name: build
+        run: npm run build
+      - name: Update Snapshots
+        run: npm run test:update-snapshots
+      - name: Create Pull Request
+        id: create_pr
+        run: |
+          update_date=$(date +'%Y-%m-%d')
+          update_datetime=$(date +'%Y%m%d%H%M%S')
+          body=$(cat << EOS
+          Update Screenshot $update_date
+          EOS
+          )
+          pr_title="Update Screenshot $update_date"
+          branch_name="update_screenshot_$update_datetime"
+          
+          git checkout -b $branch_name
+          git push origin $branch_name
+          pr_url=$(gh pr create --base main --head $branch_name --title "$pr_title" --body "$body")
+          echo "pr_url=$(echo $pr_url)" >> $GITHUB_OUTPUT
+          echo "pr_title=$(echo $pr_title)" >> $GITHUB_OUTPUT
+```
