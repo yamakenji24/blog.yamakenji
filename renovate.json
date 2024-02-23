@@ -8,13 +8,39 @@
   "ignorePaths": [
     ".github/workflows/*"
   ],
-  "prHourlyLimit": 0,
+  "prHourlyLimit": 2,
   "prConcurrentLimit": 5,
   "labels": ["Renovate"],
   "commitMessagePrefix": "[Renovate] ",
   "packageRules": [
     {
-      "matchUpdateTypes": ["patch", "pin", "digest"],
+      "groupName": "Storybook",
+      "matchPackagePatterns": ["^storybook", "^@storybook"],
+      "automerge": true,
+      "automergeSchedule": ["before 12am every weekday"]
+    },
+    {
+      "groupName": "React",
+      "matchPackageNames": ["@types/react", "@types/react-dom"],
+      "matchPackagePrefixes": ["react"],
+      "automerge": true,
+      "automergeSchedule": ["before 12am every weekday"]
+    },
+    {
+      "groupName": "Eslint",
+      "matchPackageNames": ["@typescript-eslint/eslint-plugin", "@typescript-eslint/parser"],
+      "matchPackagePrefixes": ["eslint"],
+      "automerge": true,
+      "automergeSchedule": ["before 12am every weekday"]
+    },
+    {
+      "groupName": "@emotion",
+      "matchPackagePrefixes": ["@emotion"],
+      "automerge": true,
+      "automergeSchedule": ["before 12am every weekday"]
+    },
+    {
+      "matchUpdateTypes": ["minor", "patch", "pin"],
       "automerge": true,
       "automergeSchedule": ["before 12am every weekday"]
     }
