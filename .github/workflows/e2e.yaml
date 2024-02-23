@@ -54,7 +54,7 @@ jobs:
           pr_title="Update Screenshot $update_date"
           branch_name="update_screenshot_$update_datetime"
 
-          git checkout -b $branch_name "master"
+          git checkout -b $branch_name origin/master
           git add e2e/blog-watcher.spec.ts-snapshots
           git commit -m "Update Screenshot $update_date"
           git push origin $branch_name
