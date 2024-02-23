@@ -44,4 +44,3 @@ jobs:
           pr_url=$(gh pr create --base main --head $branch_name --title "$pr_title" --body "$body")
           echo "pr_url=$(echo $pr_url)" >> $GITHUB_OUTPUT
           echo "pr_title=$(echo $pr_title)" >> $GITHUB_OUTPUT
-```
