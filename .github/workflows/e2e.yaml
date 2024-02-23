@@ -1,10 +1,14 @@
 name: e2e test
 
-on: [push, pull_request]
+on: 
+  deployment_status:
 
 # playwright testを走らせるe2eテストのジョブを定義
 jobs:
-  test:
+  e2e-test:
+    if: |
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.environment == 'Preview'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,7 +21,7 @@ jobs:
         run: npm ci
       - name: Install playwright
         run: npm run install:playwright
-      - name: build
-        run: npm run build
       - name: Run e2e test
         run: npm run test:e2e
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
