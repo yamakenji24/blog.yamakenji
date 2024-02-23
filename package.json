@@ -25,6 +25,7 @@
     "fmt": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' && eslint 'app/**/*.{js,jsx,ts,tsx}'",
     "lint-staged": "lint-staged",
     "storybook": "storybook dev -p 6006",
+    "show:e2e-report": "playwright show-report",
     "install:playwright": "playwright install --with-deps"
   },
   "dependencies": {
