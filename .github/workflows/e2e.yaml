@@ -1,11 +1,22 @@
 name: e2e test
 
-on: [push, pull_request]
+on: 
+  deployment_status:
+
+env:
+  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  TZ: Asia/Tokyo
 
 # playwright testを走らせるe2eテストのジョブを定義
 jobs:
-  test:
+  e2e-test:
+    if: |
+      github.event.deployment_status.state == 'success' &&
+      github.event.deployment_status.environment == 'Preview'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -17,7 +28,37 @@ jobs:
         run: npm ci
       - name: Install playwright
         run: npm run install:playwright
-      - name: build
-        run: npm run build
       - name: Run e2e test
         run: npm run test:e2e
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+      # e2eテストが失敗した場合にスナップショットを更新してPRを作成する
+      - name: Update Snapshots if failed
+        if: failure()
+        run: npm run test:update-snapshots
+        env:
+          BASE_URL: ${{ github.event.deployment_status.environment_url }}
+      - name: Create Pull Request
+        if: failure()
+        id: create_pr
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+
+          update_date=$(date +'%Y-%m-%d')
+          update_datetime=$(date +'%Y%m%d%H%M%S')
+          body=$(cat << EOS
+          Update Screenshot $update_date
+          EOS
+          )
+          pr_title="Update Screenshot $update_date"
+          branch_name="update_screenshot_$update_datetime"
+
+          git checkout -b $branch_name origin/master
+          git add e2e/blog-watcher.spec.ts-snapshots
+          git commit -m "Update Screenshot $update_date"
+          git push origin $branch_name
+
+          pr_url=$(gh pr create --base master --head $branch_name --title "$pr_title" --body "$body")
+          echo "pr_url=$(echo $pr_url)" >> $GITHUB_OUTPUT
+          echo "pr_title=$(echo $pr_title)" >> $GITHUB_OUTPUT
