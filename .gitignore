@@ -7,3 +7,7 @@ node_modules
 .vercel
 app/styles
 build-storybook.log
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

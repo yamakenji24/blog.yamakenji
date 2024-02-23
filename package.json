@@ -2,6 +2,10 @@
   "private": true,
   "name": "remix-app-template",
   "description": "",
+  "engines": {
+    "node": "20.11.0",
+    "npm": ">= 10.1.0"
+  },
   "license": "",
   "scripts": {
     "build": "run-s build:css build:app",
@@ -14,11 +18,13 @@
     "start": "remix-serve build",
     "watch:css": "postcss styles --base styles --dir app/styles -w",
     "test": "vitest",
+    "test:e2e": "playwright test",
     "lint": "eslint 'app/**/*.{js,jsx,ts,tsx}' || exit 0",
     "lint:fix": "eslint 'app/**/*.{js,jsx,ts,tsx}' --fix",
     "fmt": "prettier --write 'app/**/*.{js,jsx,ts,tsx}' && eslint 'app/**/*.{js,jsx,ts,tsx}'",
     "lint-staged": "lint-staged",
-    "storybook": "storybook dev -p 6006"
+    "storybook": "storybook dev -p 6006",
+    "install:playwright": "playwright install --with-deps"
   },
   "dependencies": {
     "@emotion/react": "^11.6.0",
@@ -42,6 +48,7 @@
     "@babel/preset-env": "^7.23.6",
     "@babel/preset-react": "^7.23.3",
     "@babel/preset-typescript": "^7.23.3",
+    "@playwright/test": "^1.41.2",
     "@remix-run/dev": "^2.4.1",
     "@remix-run/serve": "^2.4.1",
     "@remix-run/v1-route-convention": "^0.1.4",
@@ -57,6 +64,7 @@
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "@testing-library/user-event": "^14.4.3",
+    "@types/node": "^20.11.20",
     "@types/react": "^18.2.6",
     "@types/react-dom": "^18.2.4",
     "@types/sitemap-generator": "^8.5.1",
