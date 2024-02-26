@@ -10,9 +10,7 @@ env:
 # playwright testを走らせるe2eテストのジョブを定義
 jobs:
   e2e-test:
-    if: |
-      github.event.deployment_status.state == 'success' &&
-      github.event.deployment_status.environment == 'Preview'
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: write
