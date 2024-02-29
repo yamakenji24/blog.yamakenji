@@ -40,7 +40,7 @@
       "automergeSchedule": ["before 12am every weekday"]
     },
     {
-      "matchUpdateTypes": ["minor", "patch", "pin"],
+      "matchUpdateTypes": ["major", "minor", "patch"],
       "automerge": true,
       "automergeSchedule": ["before 12am every weekday"]
     }
