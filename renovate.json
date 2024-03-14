@@ -17,32 +17,32 @@
       "groupName": "Storybook",
       "matchPackagePatterns": ["^storybook", "^@storybook"],
       "automerge": true,
-      "automergeSchedule": ["before 10am every day"]
+      "automergeSchedule": ["before 10am"]
     },
     {
       "groupName": "React",
       "matchPackageNames": ["@types/react", "@types/react-dom"],
       "matchPackagePrefixes": ["react"],
       "automerge": true,
-      "automergeSchedule": ["before 10am every day"]
+      "automergeSchedule": ["before 10am"]
     },
     {
       "groupName": "Eslint",
       "matchPackageNames": ["@typescript-eslint/eslint-plugin", "@typescript-eslint/parser"],
       "matchPackagePrefixes": ["eslint"],
       "automerge": true,
-      "automergeSchedule": ["before 10am every day"]
+      "automergeSchedule": ["before 10am"]
     },
     {
       "groupName": "@emotion",
       "matchPackagePrefixes": ["@emotion"],
       "automerge": true,
-      "automergeSchedule": ["before 10am every day"]
+      "automergeSchedule": ["before 10am"]
     },
     {
       "matchUpdateTypes": ["major", "minor", "patch"],
       "automerge": true,
-      "automergeSchedule": ["before 10am every day"]
+      "automergeSchedule": ["before 10am"]
     }
   ],
   "schedule": ["before 12am every weekday"],
