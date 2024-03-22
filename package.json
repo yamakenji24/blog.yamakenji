@@ -35,7 +35,7 @@
     "@remix-run/react": "^2.4.1",
     "@remix-run/vercel": "^1.19.3",
     "@tailwindcss/typography": "^0.4.1",
-    "framer-motion": "^10.12.8",
+    "framer-motion": "^11.0.0",
     "gray-matter": "^4.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
