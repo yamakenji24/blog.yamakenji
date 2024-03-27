@@ -3,7 +3,7 @@
   "name": "remix-app-template",
   "description": "",
   "engines": {
-    "node": "20.11.0",
+    "node": ">=20.11.0",
     "npm": ">= 10.1.0"
   },
   "license": "",
