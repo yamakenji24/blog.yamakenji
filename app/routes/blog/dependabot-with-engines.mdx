@@ -1,7 +1,7 @@
 ---
-title: ""
-createdAt: "2024/03/xx"
-updatedAt: "2024/03/xx"
+title: "Dependabotでengine-strictを設定していると動かない件"
+createdAt: "2024/03/29"
+updatedAt: "2024/03/29"
 description: "Dependabotでengine-strictを設定していると動かない件"
 category: "Programming"
 locale: "ja"
@@ -23,5 +23,63 @@ links: ""
 import { BlogLayout } from '../../components/blog/BlogLayout';
 
 <BlogLayout {...attributes}>
+Dependabotとnpmrcを触っていたらDependabotが動かなくなる問題があったので、原因と対処方法を記録しておく
+
+## 問題
+Dependabotを稼働中において、package.jsonにenginesでnodeとnpmのversionを指定し、npmrcでengine-strictを設定していると、Dependabotが動かない
+GitHubのDependency graphから、以下のようなエラーログが記録されていることが確認できる
+
+```bash
+  proxy | 2024/03/27 09:47:52 proxy starting, commit: 
+  proxy | 2024/03/27 09:47:52 Listening (:1080)
+updater | 2024-03-27T09:47:53.967230498 [806075662:main:WARN:src/devices/src/legacy/serial.rs:222] Detached the serial input due to peer close/error.
+...
+dependency_file_not_resolvable {:message=>"Dependabot uses Node.js v20.12.0\n and NPM 10.5.0\n. Due to the engine-strict setting, the update will not succeed."}
+updater | 2024/03/27 09:48:28 INFO <job_xxx> Finished job processing
+updater | 2024/03/27 09:48:28 INFO Results:
+updater | Dependabot encountered '1' error(s) during execution, please check the logs for more details.
+updater | +-----------------------------------------------+
+updater | |         Dependencies failed to update         |
+updater | +--------------+--------------------------------+
+updater | | whatwg-fetch | dependency_file_not_resolvable |
+updater | +--------------+--------------------------------+
+updater | time="2024-03-27T09:48:28Z" level=info msg="task complete" container_id=job-xxx-updater exit_code=0 job_id=xxx step=updater
+```
+
+仮に、エラーログに記載されているバージョンをenginesで許容したとしてもエラーは解消されない
+
+```json
+{
+  "engines": {
+    "node": ">=20.11.0",
+    "npm": ">=10.2.0"
+  }
+}
+```
+
+## 原因
+[Uncertainty in Dependabot's NPM Version #9277](https://github.com/dependabot/dependabot-core/issues/9277)  
+上のissueでも報告されているが、dependabotが表示しているエラー時のNodeとNPMのバージョンは、実際のバージョンとは異なっているらしい
+
+確かに、dependabotのDockerfileを見てみると、NPMのversionは10.5.0ではなく9.6.5を示している  
+[dependabot-core Dockerfile#L18](https://github.com/dependabot/dependabot-core/blob/main/npm_and_yarn/Dockerfile#L18)
+
+一応npmのversionを上げるPRは作成されているので、そのうち解消はされそう  
+[build(deps): bump npm to 10.2.4 #9213](https://github.com/dependabot/dependabot-core/pull/9213)
+
+## 対処方法
+enginesで許容するバージョンを下げるか、engine-strictを外すことで解消できる
+Node自体は[ここで](https://github.com/dependabot/dependabot-core/blob/main/npm_and_yarn/Dockerfile#L13)20を指定しており、[ここで](https://github.com/dependabot/dependabot-core/blob/main/npm_and_yarn/Dockerfile#L23)20系となっていることがわかる
+
+そのため、enginesでnpmのバージョンを9.6.5も含めるようにすれば解消される
+```json
+{
+  "engines": {
+    "node": ">=20.11.0",
+    "npm": ">=9.6.5"
+  }
+}
+```
 
 </BlogLayout>
+
