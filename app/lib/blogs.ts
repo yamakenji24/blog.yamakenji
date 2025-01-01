@@ -10,6 +10,7 @@ import * as frontendGear from '../routes/blog/frontend-gear.mdx';
 import * as lookingBackOn2023 from '../routes/blog/looking-back-on-2023.mdx';
 import * as dependabotWithEngines from '../routes/blog/dependabot-with-engines.mdx';
 import * as lookingBackOn2024 from '../routes/blog/looking-back-on-2024.mdx';
+import * as rightWayToNavigateRDB from '../routes/blog/right_way_to_navigate_RDB.mdx';
 
 // en
 import * as sample from '../routes/en/blog/sample.mdx';
@@ -26,6 +27,7 @@ const defaultBlogs = [
   lookingBackOn2023,
   dependabotWithEngines,
   lookingBackOn2024,
+  rightWayToNavigateRDB,
 ];
 const enblogs = [sample];
 
