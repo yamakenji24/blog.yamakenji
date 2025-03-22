@@ -1,0 +1,185 @@
+---
+title: "Authleteを使った認可コードフロー"
+createdAt: "2025/03/22"
+updatedAt: "2025/03/22"
+description: "Authleteを使った認可コードフロー"
+category: "Programming"
+locale: "ja"
+tags:
+  - Auth
+meta:
+  - title: "Authleteを使った認可コードフロー | yamakenji blog"
+  - name: "description"
+    content: "Authleteを使った認可コードフロー"
+  - property: "og:description"
+    content: "Authleteを使った認可コードフロー"
+  - property: "og:image"
+    content: "https://og-image-yamakenji.vercel.app/Authleteを使った認可コードフロー.png"
+  - property: "twitter:image"
+    content: "https://og-image-yamakenji.vercel.app/Authleteを使った認可コードフロー.png"
+links: ""
+---
+
+import { BlogLayout } from '../../components/blog/BlogLayout';
+
+<BlogLayout {...attributes}>
+これまでAuth0を使って認証認可を行ってきたが、Authleteを利用した場合にどのように変わるかを整理する。  
+特に認可コードフローにフォーカスし、実装差分的に比較してみる。
+
+## 認可コードフローの流れ
+認可コードフローはRFC6749 [Authorization Code Grant](https://datatracker.ietf.org/doc/html/rfc6749#section-4.1)で定義されているOAuth2.0の認可フローの一つで、以下のような流れで認可を行う。
+1. クライアントがリソースオーナーに認可を要求し、認可サーバーの認可エンドポイントにリダイレクトする
+2. 認可サーバーがリソースオーナーを認証し、認可の可否を決定する
+3. 認可サーバーがリダイレクトを通じてクライアントに認可コードを提供する
+4. クライアントが認可コードを使って認可サーバーにアクセストークンをリクエストする
+5. 認可サーバーが認可コードの検証後、アクセストークンを発行する
+
+
+## authorize周りの比較
+クライアントが認可サーバに対して、ユーザーの認可をリクエストするために使用される。
+クライアントがどのリソースにアクセスするか、要求するアクセス権限のスコープ、リダイレクト先のURI、CSRF対策のためのstateなどを含む。  
+リクエストには、[RFC6749 4.1.1 Authorization Request](https://datatracker.ietf.org/doc/html/rfc6749#section-4.1.1) にも記載されているように以下のようなパラメータが含まれる。
+- response_type (必須): 認可コードフローでは "code" を指定
+- client_id (必須): クライアント ID
+- redirect_uri (任意): リダイレクト先の URI
+- scope (任意): 要求するアクセス権限の範囲
+- state (推奨): CSRF 対策やリクエスト間の状態管理
+
+### Auth0を使用した場合のauthorizeリクエスト
+Auth0 の SDK を利用すると、authorize エンドポイントの URL を簡単に生成できる。
+例えば、auth0-PHP を使用する場合、state や PKCE、redirect_uri などを以下のように処理する。
+```php
+# https://github.com/auth0/auth0-PHP/blob/main/src/Auth0.php#L545-L578
+$params ??= [];
+$state = $params['state'] ?? $store->getNonce();
+$params['nonce'] ??= $store->getNonce();
+$params['max_age'] ??= $this->configuration()->getTokenMaxAge();
+
+if ($this->configuration()->getUsePkce()) {
+    $codeVerifier = PKCE::generateCodeVerifier(128);
+    $params['code_challenge'] = PKCE::generateCodeChallenge($codeVerifier);
+    $params['code_challenge_method'] = 'S256';
+
+    $store->store('code_verifier', $codeVerifier);
+}
+
+$store->store('state', (string) $state);
+$store->store('nonce', (string) $params['nonce']);
+
+if (null !== $params['max_age']) {
+    $store->store('max_age', (string) $params['max_age']);
+}
+
+unset($params['state']);
+
+$this->deferStateSaving(false);
+
+if ($this->configuration()->getPushedAuthorizationRequest()) {
+    $params['state'] = (string) $state;
+    $params['redirect_uri'] = $redirectUrl;
+
+    return $this->authentication()
+        ->pushedAuthorizationRequest()
+        ->create($params);
+}
+
+return $this->authentication()->getLoginLink((string) $state, $redirectUrl, $params);
+```
+
+### Authleteを使用した場合のauthorizeリクエスト
+Authlete は API ファーストのサービスであり、すべての機能が API を通じて提供される。そのため、認可リクエストも自前で構築する必要がある。
+認可サーバーへのリクエストでは、/auth/authorization API を使用する。
+```curl
+curl -v -X POST https://jp.authlete.com/api/${service_id}/auth/authorization \
+-H 'Content-Type: application/json' \
+-u 'Authorization: Bearer Authlete管理画面から取得するアクセストークン' \
+-d '{ "parameters": "response_type=code&client_id=hoge&redirect_uri=https%3A%2F%2Fmy-client.example.com%2Fcb1&scope=timeline.read+history.read&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256" }'
+```
+リクエストを受け取ると、Authlete 側で client_id や redirect_uri、scope などの検証が行われる。
+成功すると、以下のようなレスポンスが返る。
+```json
+{
+   "resultMessage" : "[A004001] Authlete has successfully issued a ticket to the service (API Key = 10738933707579) for the authorization request from the client (ID = 12898884596863). [response_type=code, openid=true]",
+   "ticket" : "bi2Kxe2WW5mK_GZ_fDFOpK1bnY6xTy40Ap_8nxf-7AU",
+   "action" : "INTERACTION",
+}
+```
+この action の結果に応じて、後続の処理を決定する。詳細は Authlete のドキュメント を参照。
+ticket は認可コードを発行する際に必要となるため、適切に管理する必要がある。
+
+## 認可コード発行周りの比較
+メアド・パスワードやMFA等の認証成功後、認可コードを発行しcallbackへリダイレクトされる。
+
+### Auth0を使用した場合の認可コード発行
+Auth0はユーザー認証も担っている。
+認証成功後、最終的に認可コードを付与して callback エンドポイントへリダイレクトする。
+
+### Authleteを使用した場合の認可コード発行
+Authleteは認可サーバーのみを担当しており、ユーザー認証は別途行う必要がある。
+認証成功後に、Authlete に対して認可コードを発行するリクエストを行う。
+その際、ログイン画面表示時に取得したticketを参照する。
+[issue Authorization Response](https://docs.authlete.com/en/shared/latest#post-/api/-serviceId-/auth/authorization/issue)
+```curl
+curl -v -X POST https://jp.authlete.com/api/${service_id}/auth/authorization/issue \
+-H 'Content-Type: application/json' \
+-u 'Authorization: Bearer access_token' \
+-d '{ "ticket": "/auth/authorizationで取得したticket", "subject": "john" }'
+```
+成功すると、以下のようなレスポンスが返る。
+ACTIONがLOCATIONの時に認可コードをパラメータに付与されたredirect_uriへリダイレクトする。
+```json
+{
+  "resultCode": "A040001",
+  "resultMessage": "[A040001] The authorization request was processed successfully.",
+  "accessTokenDuration": 0,
+  "accessTokenExpiresAt": 0,
+  "action": "LOCATION",
+  "authorizationCode": "Xv_su944auuBgc5mfUnxXayiiQU9Z4-T_Yae_UfExmo",
+  "responseContent": "https://my-client.example.com/cb1?code=Xv_su944auuBgc5mfUnxXayiiQU9Z4-T_Yae_UfExmo&iss=https%3A%2F%2Fmy-service.example.com"
+}
+```
+
+## callback時の認可コードによるトークン類取得の比較
+callbackに付与された認可コードを使って、アクセストークンやリフレッシュトークンを取得する。
+stateやcode_verifierなどを使ってCSRF対策やPKCEを行う。
+
+### Auth0を使用した場合のトークン取得
+Auth0のSDKを使用すると、認可コードを使ってアクセストークンを取得することができる。
+また、検証などもライブラリ側で行なってくれている。
+```php
+# https://github.com/auth0/auth0-PHP/blob/main/src/Auth0.php#L154-L267
+public function exchange(
+    ?string $redirectUri = null,
+    ?string $code = null,
+    ?string $state = null,
+): bool {
+    ...
+    $code ??= $this->getRequestParameter('code');
+    $state ??= $this->getRequestParameter('state');
+    $pkce = $store->getOnce('code_verifier');
+    $nonce = $store->isset('nonce');
+    $verified = (null !== $state && $store->verify('state', $state));
+    ...
+    # ここで/oauth/tokenへのリクエストを行っている
+    $response = $this->authentication()->codeExchange($code, $redirectUri, $pkce);
+}
+```
+
+### Authleteを使用した場合のトークン取得
+Authleteは認可サーバーのみを担当しているため、アクセストークンの取得は自前で行う必要がある。
+認可コードを使ってアクセストークンを取得するために、/auth/token API を使用する。
+```curl
+curl -v -X POST https://jp.authlete.com/api/${service_id}/auth/token \
+-H 'Content-Type: application/json' \
+-u 'Authorization: Bearer access_token' \
+-d '{ "parameters": "grant_type=authorization_code&code=Xv_su944auuBgc5mfUnxXayiiQU9Z4-T_Yae_UfExmo&redirect_uri=https%3A%2F%2Fmy-client.example.com%2Fcb1&code_verifier=dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk", "clientId": "cliend_id", "clientSecret": "client_secret" }'
+```
+stateの検証は自前で行う必要がある。PKCEによる検証は、code_verifierをAPI側で送れば検証してくれる。
+
+## まとめ
+今回、Auth0とAuthleteを比較し、Auth0はSDKや管理画面を活用することで、認証・認可の実装が容易であることが改めて確認できた。
+特に、[Attack Protection](https://auth0.com/docs/secure/attack-protection)や[パスキー](https://auth0.com/docs/authenticate/database-connections/passkeys/configure-passkey-policy)などのセキュリティ機能が標準搭載されているため、追加実装の手間を抑えながら高度なセキュリティ要件を満たせる点が大きな強みだといえる。
+
+一方で、Authleteは認可機能をAPIとして提供するため、柔軟なカスタマイズが可能であり、要件に応じた認可サーバーの構築がしやすい。ただし、認証の実装や各種データ管理などは自前で行う必要があるため、開発・運用の負担が増える可能性がある。
+
+</BlogLayout>
