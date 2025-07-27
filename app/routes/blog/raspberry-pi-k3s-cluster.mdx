@@ -1,0 +1,228 @@
+---
+title: "Raspberry Pi 2台でK3sクラスターを構築してみた"
+createdAt: "2025/07/27"
+updatedAt: "2025/07/27"
+description: "自宅学習環境として、Raspberry Pi 2台を使ってK3sでKubernetesクラスターを構築"
+category: "Notes"
+locale: "ja"
+tags:
+  - Kubernetes
+  - K3s
+  - Raspberry Pi
+  - Infrastructure
+meta:
+  - title: "Raspberry Pi 2台でK3sクラスターを構築 | yamakenji blog"
+  - name: "description"
+    content: "自宅学習環境として、Raspberry Pi 2台を使ってK3sでKubernetesクラスターを構築"
+  - property: "og:description"
+    content: "自宅学習環境として、Raspberry Pi 2台を使ってK3sでKubernetesクラスターを構築"
+  - property: "og:image"
+    content: "https://og-image-yamakenji.vercel.app/Raspberry%20Pi%202台でK3sクラスターを構築.png"
+  - property: "twitter:image"
+    content: "https://og-image-yamakenji.vercel.app/Raspberry%20Pi%202台でK3sクラスターを構築.png"
+links: ""
+---
+
+import { BlogLayout } from '../../components/blog/BlogLayout';
+
+<BlogLayout {...attributes}>
+Kubernetesを学ぶために、自宅でクラスター環境を構築しました。  
+今回はRaspberry Pi 2台を使ってK3sクラスターを組み、最終的にKubernetes Dashboardまでデプロイできたので、その手順と躓いたポイントをまとめます。
+
+## 概要
+
+**目的**: 自宅でKubernetes学習環境を構築  
+**構成**: Raspberry Pi 2台でK3sクラスター  
+
+## ハードウェア構成
+### 使用機器
+- **Raspberry Pi 4 Model B × 2台**
+  - `yamakenmain` (192.168.1.85) - マスターノード
+  - `yamakensub1` (192.168.1.84) - ワーカーノード
+  - ※ `yamakensub2` (192.168.1.86) は起動せず、2台構成に変更
+<img width="400" src='/images/raspberry-pi-cluster.jpg' alt='raspberry_pi_cluster' />
+
+## 構築手順
+### 1. 初期設定とOS準備
+
+Raspberry Pi Imagerでの事前設定：
+- SSH有効化
+- WiFi設定（SSID/パスワード）
+- ホスト名設定
+
+基本パッケージのインストール：
+```bash
+# システムアップデート
+sudo apt update && sudo apt upgrade -y
+
+# 必要パッケージのインストール
+sudo apt install -y curl wget vim git htop
+```
+
+### 2. ネットワーク設定
+
+各ノードに固定IPを設定（`/etc/dhcpcd.conf`）：
+```bash
+interface wlan0
+static ip_address=192.168.1.85/24  # 各ノードで異なるIP
+static routers=192.168.1.1
+static domain_name_servers=192.168.1.1 8.8.8.8
+```
+
+`/etc/hosts`にクラスター内の名前解決を追加：
+```
+192.168.1.84 yamakensub1 k8s-worker1
+192.168.1.85 yamakenmain k8s-master
+192.168.1.86 yamakensub2 k8s-worker2
+```
+
+### 3. K3s用システム設定
+
+cgroupの有効化（`/boot/cmdline.txt`）：
+```bash
+# 既存の内容の最後に追加（重要：改行なし）
+cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory
+```
+
+スワップの無効化：
+```bash
+sudo dphys-swapfile swapoff
+sudo dphys-swapfile uninstall
+sudo systemctl disable dphys-swapfile.service
+```
+
+### 4. K3sインストール
+
+**マスターノード (yamakenmain)**：
+```bash
+curl -sfL https://get.k3s.io | sh -s - --write-kubeconfig-mode 644
+
+# トークン取得（ワーカーノード接続用）
+sudo cat /var/lib/rancher/k3s/server/node-token
+```
+
+**ワーカーノード (yamakensub1)**：
+```bash
+# ホスト名変更
+sudo hostnamectl set-hostname yamakensub1
+
+# K3sエージェントインストール
+curl -sfL https://get.k3s.io | K3S_URL=https://192.168.1.85:6443 K3S_TOKEN=<取得したトークン> sh -
+```
+
+### 5. Kubernetes Dashboardインストール
+
+Helmのインストール：
+```bash
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+```
+
+Dashboardのデプロイ：
+```bash
+helm repo add kubernetes-dashboard https://kubernetes.github.io/dashboard/
+helm repo update
+
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard \
+  --create-namespace \
+  --namespace kubernetes-dashboard
+```
+
+管理者ユーザーの作成（`admin-user.yaml`）：
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-user
+  namespace: kubernetes-dashboard
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-user
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: admin-user
+  namespace: kubernetes-dashboard
+```
+
+```bash
+kubectl apply -f admin-user.yaml
+```
+
+### 6. Dashboard外部アクセス設定
+
+systemdサービスでポートフォワードを常時実行（`/etc/systemd/system/k8s-dashboard-forward.service`）：
+```ini
+[Unit]
+Description=Kubernetes Dashboard Port Forward
+After=k3s.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml port-forward -n kubernetes-dashboard svc/kubernetes-dashboard-kong-proxy 8443:443 --address=0.0.0.0
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+```
+
+サービスの有効化：
+```bash
+sudo systemctl enable k8s-dashboard-forward.service
+sudo systemctl start k8s-dashboard-forward.service
+```
+
+## 遭遇した問題と解決方法
+
+### 1. ホスト名重複問題
+
+**問題**: 両ノードが`raspberrypi`で、ワーカーノードがクラスターに参加できない  
+**解決**: 各ノードに個別のホスト名を設定
+
+### 2. cgroup設定が反映されない
+
+**問題**: `/boot/cmdline.txt`に改行が入っていて設定が無効  
+**解決**: 1行で記述、改行なしで設定
+
+### 3. Dashboardアクセス問題
+
+**問題**: NodePortが機能せず、LoadBalancerがPending状態  
+**解決**: systemdサービスでポートフォワードを常時実行
+
+### 4. 再起動後のノード重複
+
+**問題**: ホスト名変更後、古いノードエントリが残ってNotReady状態  
+**解決**: `kubectl delete node raspberrypi`で古いノードを削除
+
+## 便利なコマンド集
+
+```bash
+# クラスター状態確認
+kubectl get nodes
+kubectl get pods --all-namespaces
+
+# Dashboardトークン取得
+kubectl -n kubernetes-dashboard create token admin-user
+
+# サービス再起動
+sudo systemctl restart k3s
+sudo systemctl restart k8s-dashboard-forward
+
+# SSHトンネル経由でアクセス
+ssh -L 8443:localhost:8443 yamakenmain@192.168.1.85
+```
+
+## 次のステップ
+
+今回のクラスター構築を踏まえて、以下の拡張を計画しています：
+
+1. **永続ストレージの設定**: NFS、Local Path Provisionerの導入
+2. **監視環境**: Prometheus + Grafanaのデプロイ
+3. **CI/CDパイプライン**: GitOps環境の構築
+4. **サンプルアプリ**: マイクロサービスアプリケーションのデプロイ
+
+</BlogLayout>
