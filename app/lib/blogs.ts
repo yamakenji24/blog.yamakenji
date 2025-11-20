@@ -13,7 +13,7 @@ import * as lookingBackOn2024 from '../routes/blog/looking-back-on-2024.mdx';
 import * as rightWayToNavigateRDB from '../routes/blog/right_way_to_navigate_RDB.mdx';
 import * as AuthleteAuthorization from '../routes/blog/authlete-authorization-code-flow.mdx';
 import * as raspberryPiK3sCluster from '../routes/blog/raspberry-pi-k3s-cluster.mdx';
-import * as changeingJobs2025 from '../routes/blog/changeing-jobs-2025.mdx';
+import * as changeingJobs2025 from '../routes/blog/change-jobs-2025.mdx';
 
 // en
 import * as sample from '../routes/en/blog/sample.mdx';
